@@ -8,9 +8,10 @@ export interface NumberInputProps {
   max: number
   step?: number
   prefix?: string
-  /** Called with a value inside [min, max], rounded to the step. Fires on every
-   *  keystroke or spin that yields a valid value, and on blur or Enter with the
-   *  clamped value otherwise, so "100" can be typed without "1" being clamped. */
+  /** Called with a value inside [min, max], rounded to the step, on every
+   *  keystroke that yields one. An out-of-range draft is kept while typing (so
+   *  "100" can be typed through "1") and discarded on blur or Enter: the box
+   *  falls back to `value`. */
   onChange: (value: number) => void
 }
 
@@ -27,19 +28,20 @@ export function NumberInput({
   // Draft while focused; null means "show the committed value".
   const [draft, setDraft] = useState<string | null>(null)
 
-  const parse = (text: string) => (text.trim() === '' ? NaN : Number(text))
+  const parse = (text: string) => (/^\d+$/.test(text.trim()) ? Number(text) : NaN)
+  const inRange = (n: number) => n >= min && n <= max
   const snap = (n: number) => Math.min(max, Math.max(min, Math.round(n / step) * step))
 
   function onInput(text: string) {
     setDraft(text)
     const n = parse(text)
-    if (n >= min && n <= max) onChange(snap(n))
+    if (inRange(n)) onChange(snap(n))
   }
 
   function commit() {
     if (draft !== null) {
       const n = parse(draft)
-      if (Number.isFinite(n)) onChange(snap(n))
+      if (inRange(n)) onChange(snap(n))
     }
     setDraft(null)
   }
@@ -57,11 +59,9 @@ export function NumberInput({
       {prefix && <span className="text-muted">{prefix}</span>}
       <input
         id={id}
-        type="number"
+        type="text"
         inputMode="numeric"
-        min={min}
-        max={max}
-        step={step}
+        pattern="[0-9]*"
         value={draft ?? value}
         onChange={(e) => onInput(e.target.value)}
         onBlur={commit}

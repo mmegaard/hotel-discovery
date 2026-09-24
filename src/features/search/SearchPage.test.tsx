@@ -49,7 +49,7 @@ describe('SearchPage', () => {
     const router = renderAt('/hotels')
     await waitFor(() => expect(count()).toHaveTextContent(/^40 of 40 hotels$/))
 
-    const max = screen.getByRole('spinbutton', { name: 'Max' })
+    const max = screen.getByRole('textbox', { name: 'Max' })
     await user.clear(max)
     await user.type(max, '100{Enter}')
     expect(router.state.location.search).toBe('?maxPrice=100')

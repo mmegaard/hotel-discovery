@@ -116,15 +116,18 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Two native `<input type="range">` stacked on one track** instead of a slider library: keyboard, screen-reader
   and touch support come free, and the only trick is `pointer-events: none` on the inputs with `auto` on the
   thumbs. Thumb styling uses Tailwind's pseudo-element variants inline, so no CSS file is touched.
-- **Number inputs apply live, but only valid values.** Every keystroke or spin that yields a value inside
-  $50–$600 is snapped to the $5 step and applied at once, moving the slider and the list. Out-of-range drafts
-  ("1" on the way to "100", or "9999") stay in the box and are clamped on blur or Enter. The box keeps what was
-  typed until blur even if the applied value was clamped against the other handle, so the cursor is never fought.
+- **Number inputs apply live, but only valid values.** Every keystroke or spin that yields a value inside the
+  box's bounds is snapped to the $5 step and applied at once, moving the slider and the list. Out-of-range drafts
+  ("1" on the way to "100", or "9999") stay in the box while typing and are discarded on blur or Enter, so the
+  box falls back to its last applied value. Nothing is ever clamped; an invalid entry is simply not taken.
 - **No debounce.** Each applied value is one `replace` navigation and one in-memory query; the refreshing state
   keeps the list stable. With a real API the fetch inside `useHotels` would be debounced, not the URL update.
-- **Handles cannot cross.** The slider keeps min ≤ max − $5. A typed min above the max (or max below the min) is
-  not applied at all: the box shows what was typed until blur, then falls back to its last applied value, the way
-  Expedia does. Clamping it to the other handle instead would silently collapse the range to a single price.
+- **Handles cannot cross.** The slider keeps min ≤ max − $5. Each box takes the other handle as its bound, so a
+  typed value past it is discarded on blur and the box falls back to its last applied value, the way Expedia
+  does. Clamping it to the other handle would silently collapse the range to a single price.
+- **The price boxes are `type="text"` with `inputMode="numeric"`, not `type="number"`.** The number spinner
+  stepped from the on-screen draft and could walk a min past the max; it also accepts "e" and "-". Digits-only
+  parsing in the component, a numeric keyboard on touch, and the slider for coarse changes cover the need.
 - **Values at the bounds are written as `undefined`,** so an untouched slider leaves the URL clean and does not
   trigger a refetch with a different key.
 - **Stale results stay visible while a filter change is answered.** `useHotels` now distinguishes `loading`

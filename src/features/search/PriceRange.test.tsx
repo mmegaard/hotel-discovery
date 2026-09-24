@@ -9,12 +9,12 @@ describe('PriceRange', () => {
     const onChange = vi.fn()
     render(<PriceRange minPrice={100} maxPrice={300} onChange={onChange} />)
 
-    const min = screen.getByRole('spinbutton', { name: 'Min' })
+    const min = screen.getByRole('textbox', { name: 'Min' })
     await user.clear(min)
     await user.type(min, '200')
     expect(onChange).toHaveBeenLastCalledWith({ minPrice: 200, maxPrice: 300 }) // no Enter needed
 
-    const max = screen.getByRole('spinbutton', { name: 'Max' })
+    const max = screen.getByRole('textbox', { name: 'Max' })
     await user.clear(max)
     await user.type(max, '600')
     expect(onChange).toHaveBeenLastCalledWith({ minPrice: 100, maxPrice: undefined })
@@ -25,19 +25,19 @@ describe('PriceRange', () => {
     const onChange = vi.fn()
     render(<PriceRange minPrice={100} maxPrice={300} onChange={onChange} />)
 
-    const min = screen.getByRole('spinbutton', { name: 'Min' })
+    const min = screen.getByRole('textbox', { name: 'Min' })
     await user.clear(min)
     await user.type(min, '400{Enter}')
     await user.tab()
     expect(onChange).not.toHaveBeenCalled()
-    expect(min).toHaveValue(100)
+    expect(min).toHaveValue('100')
 
-    const max = screen.getByRole('spinbutton', { name: 'Max' })
+    const max = screen.getByRole('textbox', { name: 'Max' })
     await user.clear(max)
     await user.type(max, '60')
     await user.tab()
     expect(onChange).not.toHaveBeenCalled()
-    expect(max).toHaveValue(300)
+    expect(max).toHaveValue('300')
   })
 
   it('slider handles cannot cross', () => {

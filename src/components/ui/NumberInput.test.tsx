@@ -16,7 +16,7 @@ function setup(value = 50) {
       onChange={onChange}
     />,
   )
-  return { onChange, input: screen.getByRole('spinbutton', { name: 'Min' }) }
+  return { onChange, input: screen.getByRole('textbox', { name: 'Min' }) }
 }
 
 describe('NumberInput', () => {
@@ -31,10 +31,10 @@ describe('NumberInput', () => {
     expect(onChange).not.toHaveBeenCalled() // 10, still below
     await user.type(input, '3')
     expect(onChange).toHaveBeenLastCalledWith(105) // 103 -> nearest $5
-    expect(input).toHaveValue(103) // the box keeps what was typed while focused
+    expect(input).toHaveValue('103') // the box keeps what was typed while focused
   })
 
-  it('clamps an out-of-range draft on blur or Enter, and reverts an empty one', async () => {
+  it('discards an out-of-range or empty draft on blur or Enter', async () => {
     const user = userEvent.setup()
     const { onChange, input } = setup()
 
@@ -43,11 +43,13 @@ describe('NumberInput', () => {
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange).toHaveBeenLastCalledWith(100) // "99" was valid on the way; 999 and 9999 were not
     await user.keyboard('{Enter}')
-    expect(onChange).toHaveBeenLastCalledWith(600)
+    expect(onChange).toHaveBeenCalledTimes(1) // 9999 discarded, not clamped
+    expect(input).toHaveValue('50')
 
     await user.clear(input)
+    await user.type(input, '1e2')
     await user.tab()
-    expect(onChange).toHaveBeenCalledTimes(2)
-    expect(input).toHaveValue(50)
+    expect(onChange).toHaveBeenCalledTimes(1) // not a plain integer
+    expect(input).toHaveValue('50')
   })
 })

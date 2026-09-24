@@ -10,9 +10,10 @@ export interface PriceRangeProps {
 }
 
 /** Min/max inputs and a two-handle slider over the same pair of values. Emits
- *  undefined at the bounds so an untouched range leaves the URL clean. A typed
- *  min above the max (or max below the min) is ignored, so the box falls back
- *  to its last applied value on blur instead of being clamped. */
+ *  undefined at the bounds so an untouched range leaves the URL clean. Each
+ *  box is bounded by the other handle, so a typed value that crosses it is
+ *  discarded on blur (the box falls back to its last applied value) instead
+ *  of being clamped. */
 export function PriceRange({
   minPrice = PRICE_MIN,
   maxPrice = PRICE_MAX,
@@ -35,9 +36,9 @@ export function PriceRange({
           prefix="$"
           value={minPrice}
           min={PRICE_MIN}
-          max={PRICE_MAX}
+          max={maxPrice}
           step={PRICE_STEP}
-          onChange={(v) => v <= maxPrice && emit(v, maxPrice)}
+          onChange={(v) => emit(v, maxPrice)}
         />
         <RangeSlider
           min={PRICE_MIN}
@@ -52,10 +53,10 @@ export function PriceRange({
           label="Max"
           prefix="$"
           value={maxPrice}
-          min={PRICE_MIN}
+          min={minPrice}
           max={PRICE_MAX}
           step={PRICE_STEP}
-          onChange={(v) => v >= minPrice && emit(minPrice, v)}
+          onChange={(v) => emit(minPrice, v)}
         />
       </div>
     </fieldset>
