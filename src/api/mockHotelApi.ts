@@ -11,8 +11,11 @@ import { cityOptions, filterHotels, starOptions, type CityOption } from './logic
 const hotels: Hotel[] = seed
 
 /** Simulated network latency so loading states are visible in the browser.
- *  Zero under test so the suite stays fast. */
-const LATENCY_MS = import.meta.env.MODE === 'test' ? 0 : 400
+ *  This module is the stand-in for a real API and is replaced, not shipped,
+ *  in production; the delay is a property of the mock. Zero under test;
+ *  VITE_MOCK_LATENCY_MS overrides it for a demo build. */
+const LATENCY_MS =
+  import.meta.env.MODE === 'test' ? 0 : Number(import.meta.env.VITE_MOCK_LATENCY_MS ?? 400)
 
 /** Resolves after the simulated latency, or rejects with an AbortError if the
  *  caller gave up first, exactly as fetch() would. */

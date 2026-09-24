@@ -223,6 +223,25 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   open-nights hint under the inputs carries the same information.
 - **date-fns arrives as a transitive dependency** of react-day-picker; the app's own code still does not import it.
 
+## Production hardening
+
+A final pass against "lightweight, production-ready", after all features landed. One PR per topic.
+
+- **A failed request is a value, not an unhandled rejection.** `useQuery` records the failed key and reports
+  `status: 'error'`; the search page, the detail page and the availability panel each show one line
+  ("Couldn't load hotels. Check your connection and try again.") in place of skeletons. Changing the filters or
+  dates retries naturally. No error boundary and no retry button: the brief says robust error handling is not
+  required, only that any error state shown is documented, and this is the whole of it.
+- **Only price changes are debounced.** A city pick, a star toggle, a hotel open or a date change is one click and
+  goes at once; the 250ms wait applies only when nothing but the price bounds changed since the last render
+  (`useFilterDebounce`). Previously every query waited, which added a quarter second to every click.
+- **The mock's latency is a property of the mock.** It is 0 under test and `VITE_MOCK_LATENCY_MS` (default 400)
+  otherwise. The mock module is replaced by a real client in production, so no artificial delay can ship with
+  one; a demo build keeps it so loading states are visible.
+- **The fake "today" is deliberately not gated on production builds.** A demo deploy is a production build; if
+  it flipped to the real date the seed's July nights would be past and nothing could be booked. `VITE_TODAY=now`
+  is the one switch, set at build time when a real API arrives.
+
 ## UI states
 
 Documented here as they are built.
@@ -243,6 +262,9 @@ Documented here as they are built.
 - **Hotel has no open dates**: hint reads "This hotel has no open nights right now." and the empty state says
   "This hotel has no open dates. Try another hotel."
 - **No cities match** (combobox): one line inside the list, `No cities match "…"`; the input keeps its text.
+- **Request failed** (search count line, detail page, availability panel; `role="status"`): one line,
+  "Couldn't load hotels / this hotel / check availability. Check your connection and try again." The mock never
+  fails; the state exists for a real API.
 
 All designed states are built.
 
