@@ -131,3 +131,9 @@ slider, star prices and calendar, which TRADEOFFS.md marks as the first things t
   options load, the empty state kept during a refresh, and the tests.
 - **I decided:** the star row must never grow on load (I spotted the jump); keep the no-jumps rule absolute.
 - **I changed:** reviewed the PR before merge.
+
+## PR 14 — CI
+
+- **AI produced:** the GitHub Actions workflow.
+- **I decided:** run the same four checks as the local definition of done, plus a format check.
+- **I changed:** reviewed the PR before merge.

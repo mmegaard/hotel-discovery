@@ -27,7 +27,8 @@ npm run dev        # http://localhost:5173
 | `npm run build`     | Production build to `dist/`                |
 | `npm run preview`   | Serve the production build                 |
 
-Definition of done for every PR was `npm run typecheck && npm run lint && npm test && npm run build`.
+Definition of done for every PR was `npm run typecheck && npm run lint && npm test && npm run build`; CI
+(`.github/workflows/ci.yml`) runs the same plus a format check on every push and pull request.
 
 ### The demo clock
 
