@@ -13,3 +13,11 @@ what I decided, and what I changed by hand, so the line between assistance and a
   a faked "today" of 2026-07-09 so the demo dates are bookable; recording every tradeoff in a single file.
 - **I changed:** reviewed each commit before it landed; kept the seed byte-identical to the handoff rather than
   letting the formatter rewrite it.
+
+## PR 1 — app shell
+
+- **AI produced:** the route table, `AppLayout`, placeholder search and detail pages, the 404 page from the
+  wireframe, route tests on a memory router, and the routing notes in TRADEOFFS.md.
+- **I decided:** data-router mode without loaders; `/` redirects to `/hotels`; the wireframe's URL strip stays out
+  of the app; unknown hotel ids are a page concern, not a router concern.
+- **I changed:** reviewed the PR before merge.
