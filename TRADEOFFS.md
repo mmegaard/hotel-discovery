@@ -41,6 +41,32 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Layout:** one `AppLayout` with the StayFinder header and an `<Outlet />`. No navigation links yet; the header
   is a brand mark until a feature needs more.
 
+## Data layer
+
+- **Mock API mirrors the backend brief, one module deep.** `api/mockHotelApi.ts` exposes the three endpoints
+  (`GET /hotels`, `/hotels/:id`, `/hotels/:id/rooms`) with the brief's snake_case params and returns Promises.
+  `api/hotelApi.ts` is the only import hooks use; it maps the UI's `HotelFilters` onto those params. Swapping in
+  `fetch()` touches two files and nothing above them.
+- **Multi-star search in one request.** The brief's `star_rating` is a single value; the UI multi-selects. The mock
+  accepts an array. A real backend would need either repeated `star_rating` params or one request per rating.
+- **Unknown hotel id resolves to `undefined`,** standing in for a 404, rather than throwing. Pages render "not found"
+  from a value, not from a catch block.
+- **Filter semantics:** city is an exact, case-insensitive match; stars match any selected rating and an empty
+  selection means all; price matches a hotel when ANY room is inside `[minPrice, maxPrice]` and an unset bound is
+  open. Cards will show the lowest in-range price. Star toggles are priced against the current city and price
+  filters with the star selection ignored, so every toggle stays informative.
+- **Night semantics:** a stay covers `[checkIn, checkOut)`; the guest leaves on check-out morning, so the check-out
+  date never needs to be available. A room is open only when every night is in `available_dates`. Check-out on
+  or before check-in is invalid and opens nothing.
+- **Dates are ISO strings, not Date objects.** Arithmetic goes through `Date.UTC` so time zones never shift a day.
+  No date library: the maths is a few lines and `Intl.DateTimeFormat` does the formatting. The design suggested
+  date-fns; react-day-picker will pull it in transitively later, but the app's own code stays independent of it.
+- **Fake "today" is 2026-07-09,** the day before the seed's only open dates, so the demo can book. `lib/dates.ts#today()`
+  is the single switch: `VITE_TODAY=now` uses the wall clock, `VITE_TODAY=YYYY-MM-DD` pins another day.
+- **Amenity labels are humanized, not mapped.** `fitness_center` → "Fitness center" by replacing underscores and
+  capitalizing the first letter; brand casing like "free Wi-Fi" survives. A lookup table would be more polished
+  and is not worth its maintenance for 40 hotels.
+
 ## UI states
 
 Documented here as they are built.
