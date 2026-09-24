@@ -1,13 +1,18 @@
-import { useRef, useState, type KeyboardEvent } from 'react'
+import { lazy, Suspense, useRef, useState, type KeyboardEvent } from 'react'
 import { isValidStay, openNights } from '../../api/logic/availability'
 import { DateInput } from '../../components/ui/DateInput'
-import { DatePicker } from '../../components/ui/DatePicker'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { useRoomAvailability } from '../../hooks/useRoomAvailability'
 import { addDays, formatLong, nightsBetween, spans, today, type IsoDate } from '../../lib/dates'
 import { plural } from '../../lib/format'
 import type { Hotel } from '../../types/hotel'
 import { RoomCard } from './RoomCard'
+
+// The calendar (react-day-picker + date-fns) loads on first focus, so the
+// search page and the initial detail render never pay for it.
+const DatePicker = lazy(() =>
+  import('../../components/ui/DatePicker').then((m) => ({ default: m.DatePicker })),
+)
 
 export interface RoomAvailabilityProps {
   hotel: Hotel
@@ -87,22 +92,31 @@ export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
         </p>
 
         {picker && (
-          <DatePicker
-            value={{ from: checkIn, to: checkOut }}
-            focus={picker}
-            today={today()}
-            onChange={({ from, to }, next) => {
-              setCheckIn(from)
-              setCheckOut(to)
-              setPicker(next)
-            }}
-            onClear={() => {
-              setCheckIn(undefined)
-              setCheckOut(undefined)
-              setPicker('from')
-            }}
-            onDone={() => setPicker(null)}
-          />
+          <Suspense
+            fallback={
+              <div
+                aria-hidden="true"
+                className="h-[434px] animate-pulse rounded-xl border border-line-strong bg-white"
+              />
+            }
+          >
+            <DatePicker
+              value={{ from: checkIn, to: checkOut }}
+              focus={picker}
+              today={today()}
+              onChange={({ from, to }, next) => {
+                setCheckIn(from)
+                setCheckOut(to)
+                setPicker(next)
+              }}
+              onClear={() => {
+                setCheckIn(undefined)
+                setCheckOut(undefined)
+                setPicker('from')
+              }}
+              onDone={() => setPicker(null)}
+            />
+          </Suspense>
         )}
       </div>
 

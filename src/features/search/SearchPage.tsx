@@ -23,7 +23,8 @@ export function SearchPage() {
 
   useDocumentTitle(filters.city ? `Hotels in ${filters.city}` : 'Find a hotel')
 
-  const empty = status === 'success' && hotels.length === 0
+  // Keep the empty state up while a change to an empty result is answered.
+  const empty = (status === 'success' || status === 'refreshing') && hotels.length === 0
 
   return (
     <div className="flex grow flex-col gap-5 px-10 pt-7">
@@ -31,8 +32,8 @@ export function SearchPage() {
 
       <FilterBar
         filters={filters}
-        cityOptions={options.cities}
-        starOptions={options.stars}
+        cityOptions={options?.cities ?? []}
+        starOptions={options?.stars}
         cityDraft={cityDraft}
         onCityDraftChange={setCityDraft}
         onChange={updateFilters}
@@ -40,7 +41,7 @@ export function SearchPage() {
       />
 
       <p aria-live="polite" className="text-[15px]">
-        {status === 'loading' ? (
+        {status === 'loading' || options === undefined ? (
           'Loading hotels…'
         ) : status === 'error' ? (
           'Couldn’t load hotels. Check your connection and try again.'

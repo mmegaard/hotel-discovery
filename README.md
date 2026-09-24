@@ -123,7 +123,7 @@ AppLayout                        header + <Outlet />
 │   ├── AmenityList
 │   ├── RoomAvailability         useRoomAvailability; dates as local state
 │   │   ├── ui/DateInput ×2      typed MM/DD/YYYY, opens the picker on focus
-│   │   ├── ui/DatePicker        react-day-picker range mode, styled with theme tokens
+│   │   ├── ui/DatePicker        react-day-picker range mode, styled with theme tokens, lazy-loaded
 │   │   ├── RoomCard ×N          type, $/night, beds · sleeps · sq ft, stay total
 │   │   └── ui/EmptyState        no rooms / no open dates
 │   └── ui/EmptyState            "Hotel not found"
@@ -135,7 +135,8 @@ AppLayout                        header + <Outlet />
 - **No layout jumps.** Every async state reserves the space its content will take: skeletons match the real
   boxes, refreshing dims the old list instead of replacing it, empty states take the results slot.
 - **Design for production data.** Nothing derives from "there are 40 hotels": options and totals come from
-  endpoints, responses are paged, queries are debounced and abortable.
+  endpoints, responses are paged, queries are abortable, continuous inputs are debounced, failures are a
+  documented state, and the calendar is code-split. Bundle: 116 KB gzipped plus 21 KB for the calendar on demand.
 - **One accent, states never differ by hue alone.** 44px targets, a 3px focus ring, `aria-pressed`,
   `aria-live`, `role="alert"` and `role="status"` where the design calls for them.
 

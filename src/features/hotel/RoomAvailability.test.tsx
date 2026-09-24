@@ -86,7 +86,7 @@ describe('RoomAvailability', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 
     await user.click(cin)
-    const dialog = screen.getByRole('dialog', { name: 'Choose check-in date' })
+    const dialog = await screen.findByRole('dialog', { name: 'Choose check-in date' })
     expect(cin).toHaveAttribute('aria-expanded', 'true')
     const day = (n: number) =>
       within(dialog).getByRole('button', { name: (name) => name.includes(`July ${n}`) })
