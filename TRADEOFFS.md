@@ -203,6 +203,26 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **`EmptyState` gained `compact` and `headingLevel`** rather than a second component: inside the panel it sits
   under an h2, so its title is an h3.
 
+## Date picker
+
+- **react-day-picker for the calendar.** Keyboard navigation, ARIA grid semantics, month navigation and range
+  display come from the library; writing those by hand would eat the remaining budget for no design gain. Its
+  stylesheet is not imported: every slot is styled through `classNames` with the theme tokens, so the calendar
+  looks like the rest of the app (44px day buttons, 3px focus ring, one accent).
+- **The selection rule is ours, not the library's.** `onSelect` ignores the library's proposed range and uses
+  the clicked day plus which input the user is filling in: from the check-in box any click restarts the range
+  and prompts for check-out; from the check-out box a click after check-in completes it, a click on or before
+  check-in restarts. This matches the wireframe's "first click sets check-in, second sets check-out" without the
+  library's shrink-or-extend behaviour on a complete range.
+- **The picker opens on focus of either input and renders inline** below them, per the wireframe, so results
+  move down while it is open. That is the one place content below the user's focus shifts; the inputs, hint and
+  everything above stay put. It closes on Done, Escape, or focus leaving the dates area.
+- **Local `Date` at midnight is the bridge** to the library (`toLocalDate` / `fromLocalDate`); the app's own
+  state stays ISO strings. Range is limited to today through one year out.
+- **Per-night prices under each day are dropped,** as DESIGN.md allows ("drop first if time is short"); the
+  open-nights hint under the inputs carries the same information.
+- **date-fns arrives as a transitive dependency** of react-day-picker; the app's own code still does not import it.
+
 ## UI states
 
 Documented here as they are built.

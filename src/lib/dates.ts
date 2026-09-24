@@ -33,6 +33,18 @@ function toUtc(iso: IsoDate): Date {
   return new Date(Date.UTC(y, m - 1, d))
 }
 
+/** Local-midnight Date for a calendar day, for libraries that think in Date
+ *  objects (the calendar). The inverse is `fromLocalDate`. */
+export function toLocalDate(iso: IsoDate): Date {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+export function fromLocalDate(date: Date): IsoDate {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
 export function addDays(iso: IsoDate, days: number): IsoDate {
   const date = toUtc(iso)
   date.setUTCDate(date.getUTCDate() + days)

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 
 export interface EmptyStateProps {
   title: string
@@ -23,9 +23,11 @@ export function EmptyState({
   headingLevel = 2,
 }: EmptyStateProps) {
   const Heading = headingLevel === 2 ? 'h2' : 'h3'
+  const headingId = useId()
   return (
     <div
       role={role}
+      aria-labelledby={headingId}
       className={`flex flex-col items-center rounded-xl border border-dashed border-line-strong bg-white text-center ${
         compact ? 'gap-2 px-4 py-7' : 'gap-3 px-6 py-14'
       }`}

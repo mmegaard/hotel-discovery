@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState, type KeyboardEvent } from 'react'
 import { isValidStay, openNights } from '../../api/logic/availability'
 import { DateInput } from '../../components/ui/DateInput'
+import { DatePicker } from '../../components/ui/DatePicker'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { useRoomAvailability } from '../../hooks/useRoomAvailability'
 import { addDays, formatLong, nightsBetween, spans, today, type IsoDate } from '../../lib/dates'
@@ -17,6 +18,9 @@ export interface RoomAvailabilityProps {
 export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
   const [checkIn, setCheckIn] = useState<IsoDate>()
   const [checkOut, setCheckOut] = useState<IsoDate>()
+  // Which input the calendar is attached to; null when closed.
+  const [picker, setPicker] = useState<'from' | 'to' | null>(null)
+  const datesRef = useRef<HTMLDivElement>(null)
   const { open, closed, status } = useRoomAvailability(hotel, checkIn, checkOut)
 
   const nights = openNights(hotel)
@@ -35,6 +39,10 @@ export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
     if (date && checkOut && checkOut <= date) setCheckOut(undefined)
   }
 
+  function onPickerKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'Escape') setPicker(null)
+  }
+
   return (
     <section
       aria-labelledby="availability"
@@ -44,27 +52,59 @@ export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
         Check room availability
       </h2>
 
-      <div className="grid grid-cols-2 gap-3">
-        <DateInput
-          id="check-in"
-          label="Check-in"
-          value={checkIn}
-          min={today()}
-          onChange={onCheckIn}
-          describedBy="open-window"
-        />
-        <DateInput
-          id="check-out"
-          label="Check-out"
-          value={checkOut}
-          min={addDays(today(), 1)}
-          onChange={setCheckOut}
-          describedBy="open-window"
-        />
+      <div
+        ref={datesRef}
+        className="flex flex-col gap-4"
+        onKeyDown={onPickerKeyDown}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setPicker(null)
+        }}
+      >
+        <div className="grid grid-cols-2 gap-3">
+          <DateInput
+            id="check-in"
+            label="Check-in"
+            value={checkIn}
+            min={today()}
+            onChange={onCheckIn}
+            onFocus={() => setPicker('from')}
+            expanded={picker === 'from'}
+            describedBy="open-window"
+          />
+          <DateInput
+            id="check-out"
+            label="Check-out"
+            value={checkOut}
+            min={addDays(today(), 1)}
+            onChange={setCheckOut}
+            onFocus={() => setPicker('to')}
+            expanded={picker === 'to'}
+            describedBy="open-window"
+          />
+        </div>
+        <p id="open-window" className="-mt-2 text-[13px] text-muted">
+          {windowHint}
+        </p>
+
+        {picker && (
+          <DatePicker
+            value={{ from: checkIn, to: checkOut }}
+            focus={picker}
+            today={today()}
+            onChange={({ from, to }, next) => {
+              setCheckIn(from)
+              setCheckOut(to)
+              setPicker(next)
+            }}
+            onClear={() => {
+              setCheckIn(undefined)
+              setCheckOut(undefined)
+              setPicker('from')
+            }}
+            onDone={() => setPicker(null)}
+          />
+        )}
       </div>
-      <p id="open-window" className="-mt-1 text-[13px] text-muted">
-        {windowHint}
-      </p>
 
       <div aria-live="polite" className="flex flex-col gap-3">
         {!ready && (
