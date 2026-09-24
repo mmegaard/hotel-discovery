@@ -32,7 +32,7 @@ export function HotelList({
             <HotelCard
               key={hotel.id}
               hotel={hotel}
-              fromPrice={lowestPriceInRange(hotel, filters) ?? lowestPriceInRange(hotel, {})!}
+              fromPrice={lowestPriceInRange(hotel, filters) ?? lowestPriceInRange(hotel, {})}
             />
           ))}
     </section>

@@ -8,8 +8,9 @@ const SHOWN_AMENITIES = 3
 
 export interface HotelCardProps {
   hotel: Hotel
-  /** Lowest nightly price to advertise; the list decides which room qualifies. */
-  fromPrice: number
+  /** Lowest nightly price to advertise; the list decides which room qualifies.
+   *  Undefined when the hotel lists no rooms. */
+  fromPrice: number | undefined
 }
 
 export function HotelCard({ hotel, fromPrice }: HotelCardProps) {
@@ -19,6 +20,7 @@ export function HotelCard({ hotel, fromPrice }: HotelCardProps) {
   return (
     <Link
       to={`/hotels/${hotel.id}`}
+      state={{ fromSearch: true }}
       className="flex shrink-0 gap-5 rounded-xl border border-line bg-white p-4 text-inherit no-underline hover:border-line-strong"
     >
       <div
@@ -64,9 +66,15 @@ export function HotelCard({ hotel, fromPrice }: HotelCardProps) {
       </div>
 
       <div className="flex w-40 shrink-0 flex-col items-end justify-end text-right">
-        <div className="text-xs text-muted">from</div>
-        <div className="text-[22px] font-semibold">{formatPrice(fromPrice)}</div>
-        <div className="text-xs text-muted">per night</div>
+        {fromPrice === undefined ? (
+          <div className="text-sm text-muted">No rooms listed</div>
+        ) : (
+          <>
+            <div className="text-xs text-muted">from</div>
+            <div className="text-[22px] font-semibold">{formatPrice(fromPrice)}</div>
+            <div className="text-xs text-muted">per night</div>
+          </>
+        )}
       </div>
     </Link>
   )

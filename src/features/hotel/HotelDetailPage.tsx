@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useHotel } from '../../hooks/useHotel'
 import { AmenityList } from './AmenityList'
 import { BackLink } from './BackLink'
@@ -10,6 +11,7 @@ import { RoomAvailability } from './RoomAvailability'
 export function HotelDetailPage() {
   const { id = '' } = useParams()
   const { hotel, status } = useHotel(id)
+  useDocumentTitle(hotel?.name ?? (status === 'not-found' ? 'Hotel not found' : undefined))
 
   return (
     <div className="flex grow flex-col gap-5 px-10 pt-6 pb-10">

@@ -1,10 +1,13 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { routes } from '../../routes'
 
-function renderAt(path: string) {
-  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />)
+function renderAt(...entries: Array<string | { pathname: string; state?: unknown }>) {
+  const router = createMemoryRouter(routes, { initialEntries: entries })
+  render(<RouterProvider router={router} />)
+  return router
 }
 
 describe('HotelDetailPage', () => {
@@ -30,6 +33,20 @@ describe('HotelDetailPage', () => {
       'href',
       '/hotels?city=Chicago',
     )
+    expect(document.title).toBe('The Grand Luminary · StayFinder')
+  })
+
+  it('goes back through history when the user came from the search page', async () => {
+    const user = userEvent.setup()
+    const router = renderAt('/hotels?city=Chicago', {
+      pathname: '/hotels/hotel-01',
+      state: { fromSearch: true },
+    })
+    await screen.findByRole('heading', { level: 1, name: 'The Grand Luminary' })
+    await user.click(screen.getByRole('link', { name: 'Back to results' }))
+    expect(router.state.location.pathname + router.state.location.search).toBe(
+      '/hotels?city=Chicago',
+    )
   })
 
   it('shows the not-found state for an unknown id', async () => {
@@ -41,5 +58,6 @@ describe('HotelDetailPage', () => {
       '/hotels',
     )
     expect(screen.getByRole('link', { name: 'Back to results' })).toHaveAttribute('href', '/hotels')
+    expect(document.title).toBe('Hotel not found · StayFinder')
   })
 })
