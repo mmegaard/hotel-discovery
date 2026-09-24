@@ -10,6 +10,11 @@ import { filterHotels } from './logic/filters'
 
 const hotels: Hotel[] = seed
 
+/** Simulated network latency so loading states are visible in the browser.
+ *  Zero under test so the suite stays fast. */
+const LATENCY_MS = import.meta.env.MODE === 'test' ? 0 : 400
+const delay = () => new Promise<void>((resolve) => setTimeout(resolve, LATENCY_MS))
+
 export interface GetHotelsParams {
   city?: string
   /** The brief takes one star_rating; the mock accepts several so the UI's
@@ -21,6 +26,7 @@ export interface GetHotelsParams {
 
 /** GET /hotels */
 export async function getHotels(params: GetHotelsParams = {}): Promise<Hotel[]> {
+  await delay()
   return filterHotels(hotels, {
     city: params.city,
     stars: params.star_rating,
@@ -31,6 +37,7 @@ export async function getHotels(params: GetHotelsParams = {}): Promise<Hotel[]> 
 
 /** GET /hotels/:id — undefined stands in for a 404. */
 export async function getHotelById(id: string): Promise<Hotel | undefined> {
+  await delay()
   return hotels.find((h) => h.id === id)
 }
 

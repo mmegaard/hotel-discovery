@@ -71,7 +71,12 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 
 - **Loading is derived, not stored.** `useHotels` keeps the last result with the filter key it answered; "loading"
   means the current key differs. No `setState` inside the effect, and a stale response is dropped by the cleanup
-  flag. The mock answers on the next tick, so the loading line is barely visible; it exists so a real API slots in.
+  flag.
+- **Skeleton cards while loading.** Every card is the same box, so `HotelList` renders six `HotelCardSkeleton`s
+  (aria-hidden, `aria-busy` on the region) and swaps them for real cards without the page jumping. Six fills a
+  1280×900 viewport. The count line reads "Loading hotels…" for screen readers.
+- **The mock API waits 400ms in the browser, 0ms under test.** Without latency the skeletons would never be seen;
+  the delay is the one place the mock is deliberately unlike an in-memory lookup.
 - **Search results are time-agnostic.** DESIGN.md puts a "No open dates" tag on cards for hotels with empty
   `available_dates`. Matt's call: the list is about place, stars and price; dates belong to the detail page. The
   tag is dropped here and "This hotel has no open dates" will appear only in the availability panel.
@@ -88,7 +93,7 @@ Documented here as they are built.
 
 - **404** (`/anything`): mono "404", "Page not found", one-line explanation, "Search hotels" button link.
 
-- **Loading** (search page): one line, "Loading hotels…", in the `aria-live` count region.
+- **Loading** (search page): "Loading hotels…" in the `aria-live` count region plus six skeleton cards.
 
 Still to build: no hotels match; availability idle; invalid date range; no rooms
 available; hotel has no open dates; hotel not found; 404; one-line loading.

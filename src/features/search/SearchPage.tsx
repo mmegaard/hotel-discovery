@@ -25,7 +25,7 @@ export function SearchPage() {
         <p className="text-[13px] text-muted">Prices are the lowest nightly rate in your range</p>
       </div>
 
-      {status === 'success' && <HotelList hotels={hotels} filters={filters} />}
+      <HotelList hotels={hotels} filters={filters} loading={status === 'loading'} />
     </div>
   )
 }

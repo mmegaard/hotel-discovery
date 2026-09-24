@@ -33,8 +33,8 @@ what I decided, and what I changed by hand, so the line between assistance and a
 
 ## PR 3 — search list
 
-- **AI produced:** `useHotels`, `SearchPage`, `HotelList`, `HotelCard`, `ui/StarGlyphs`, `ui/RatingBadge`, page and
-  card tests, and the search-list notes in TRADEOFFS.md.
+- **AI produced:** `useHotels`, `SearchPage`, `HotelList`, `HotelCard`, `HotelCardSkeleton`, `ui/StarGlyphs`,
+  `ui/RatingBadge`, page and card tests, and the search-list notes in TRADEOFFS.md.
 - **I decided:** search results do not show availability (the "No open dates" tag from the design is dropped);
-  the card receives a price rather than the filters.
+  the card receives a price rather than the filters; skeleton cards while loading, since every card is the same size.
 - **I changed:** reviewed the PR before merge.
