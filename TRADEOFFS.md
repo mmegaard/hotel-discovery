@@ -120,8 +120,12 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   box's bounds is snapped to the $5 step and applied at once, moving the slider and the list. Out-of-range drafts
   ("1" on the way to "100", or "9999") stay in the box while typing and are discarded on blur or Enter, so the
   box falls back to its last applied value. Nothing is ever clamped; an invalid entry is simply not taken.
-- **No debounce.** Each applied value is one `replace` navigation and one in-memory query; the refreshing state
-  keeps the list stable. With a real API the fetch inside `useHotels` would be debounced, not the URL update.
+- **Debounce in the hook, not the inputs.** Every applied value still writes the URL and moves the slider at
+  once, so the UI feels direct, but `useHotels` waits 250ms of quiet before querying (0ms under test). The list
+  reads as refreshing from the first change. A slider drag therefore costs one request, not dozens.
+- **Superseded queries are aborted.** `searchHotels` takes an `AbortSignal` like `fetch()`; the hook aborts the
+  previous controller on every change and drops any answer that still arrives. The mock honours the signal, so
+  swapping in `fetch` keeps the same contract.
 - **Handles cannot cross.** The slider keeps min ≤ max − $5. Each box takes the other handle as its bound, so a
   typed value past it is discarded on blur and the box falls back to its last applied value, the way Expedia
   does. Clamping it to the other handle would silently collapse the range to a single price.

@@ -50,8 +50,9 @@ what I decided, and what I changed by hand, so the line between assistance and a
 
 ## PR 5 — search price
 
-- **AI produced:** `ui/NumberInput`, `ui/RangeSlider`, `PriceRange`, the `refreshing` status in `useHotels`,
-  six tests, and the price notes in TRADEOFFS.md.
+- **AI produced:** `ui/NumberInput`, `ui/RangeSlider`, `PriceRange`, the `refreshing` status, debounce and abort
+  support in `useHotels`, ten tests, and the price notes in TRADEOFFS.md.
 - **I decided:** native range inputs over a library; typed and spun values apply live once valid, so the box, the
-  slider and the list always agree; keep stale results while refreshing rather than flashing skeletons; no debounce.
+  slider and the list always agree; keep stale results while refreshing rather than flashing skeletons; debounce the query
+  in the hook rather than the URL, with abortable requests, so a live API sees one request per drag.
 - **I changed:** reviewed the PR before merge.
