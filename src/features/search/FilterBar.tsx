@@ -1,4 +1,4 @@
-import type { CityOption, StarOption } from '../../api/logic/filters'
+import { STAR_RATINGS, type CityOption, type StarOption } from '../../api/logic/filters'
 import { Button } from '../../components/ui/Button'
 import { Combobox } from '../../components/ui/Combobox'
 import { plural } from '../../lib/format'
@@ -9,7 +9,9 @@ import { StarToggle } from './StarToggle'
 export interface FilterBarProps {
   filters: HotelFilters
   cityOptions: CityOption[]
-  starOptions: StarOption[]
+  /** Undefined until the facets answer; the row then shows five placeholders
+   *  of the toggles' exact size so nothing moves when they arrive. */
+  starOptions: StarOption[] | undefined
   cityDraft: string
   onCityDraftChange: (text: string) => void
   onChange: (patch: Partial<HotelFilters>) => void
@@ -65,15 +67,23 @@ export function FilterBar({
 
       <fieldset className="flex flex-wrap items-center gap-3">
         <legend className="float-left mr-2 w-22 text-[13px] font-medium">Star rating</legend>
-        {starOptions.map((option) => (
-          <StarToggle
-            key={option.stars}
-            stars={option.stars}
-            fromPrice={option.fromPrice}
-            pressed={selectedStars.includes(option.stars)}
-            onToggle={toggleStars}
-          />
-        ))}
+        {starOptions
+          ? starOptions.map((option) => (
+              <StarToggle
+                key={option.stars}
+                stars={option.stars}
+                fromPrice={option.fromPrice}
+                pressed={selectedStars.includes(option.stars)}
+                onToggle={toggleStars}
+              />
+            ))
+          : STAR_RATINGS.map((stars) => (
+              <div
+                key={stars}
+                aria-hidden="true"
+                className="h-14 w-[150px] shrink-0 animate-pulse rounded-[10px] border-2 border-line bg-panel"
+              />
+            ))}
       </fieldset>
     </section>
   )
