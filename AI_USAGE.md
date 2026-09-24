@@ -38,3 +38,12 @@ what I decided, and what I changed by hand, so the line between assistance and a
 - **I decided:** search results do not show availability (the "No open dates" tag from the design is dropped);
   the card receives a price rather than the filters; skeleton cards while loading, since every card is the same size.
 - **I changed:** reviewed the PR before merge.
+
+## PR 4 — search city
+
+- **AI produced:** `lib/filterParams.ts`, `useHotelFilters`, `useCityOptions`, `ui/Combobox` (ARIA pattern,
+  keyboard), `ui/EmptyState`, `ui/Button`, `FilterBar`, the URL-backed `SearchPage`, 13 tests, and the filter
+  notes in TRADEOFFS.md.
+- **I decided:** URL as the only filter store with `replace` navigation; the typed city text owned by the page so
+  both Reset buttons clear it; generic prefix matching in the combobox; honouring an unknown city in the URL.
+- **I changed:** reviewed the PR before merge.
