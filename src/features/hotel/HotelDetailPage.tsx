@@ -1,10 +1,50 @@
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
+import { EmptyState } from '../../components/ui/EmptyState'
+import { useHotel } from '../../hooks/useHotel'
+import { AmenityList } from './AmenityList'
+import { BackLink } from './BackLink'
+import { HotelDetailSkeleton } from './HotelDetailSkeleton'
+import { HotelHeader } from './HotelHeader'
 
 export function HotelDetailPage() {
-  const { id } = useParams()
+  const { id = '' } = useParams()
+  const { hotel, status } = useHotel(id)
+
   return (
-    <div className="px-10 py-8">
-      <h1 className="text-2xl font-semibold">Hotel {id}</h1>
+    <div className="flex grow flex-col gap-5 px-10 pt-6 pb-10">
+      <BackLink
+        fallbackTo={hotel ? `/hotels?city=${encodeURIComponent(hotel.address.city)}` : '/hotels'}
+      />
+
+      {status === 'not-found' ? (
+        <div className="mt-10">
+          <EmptyState
+            title="Hotel not found"
+            description="This link may be out of date, or the hotel is no longer listed."
+            action={
+              <Link
+                to="/hotels"
+                className="flex h-11 items-center rounded-lg bg-accent px-5 text-[15px] font-medium text-white hover:bg-accent-strong"
+              >
+                Browse all hotels
+              </Link>
+            }
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-[minmax(0,1fr)_440px] items-start gap-8">
+          {hotel ? (
+            <div className="flex flex-col gap-6">
+              <HotelHeader hotel={hotel} />
+              <AmenityList amenities={hotel.amenities} />
+            </div>
+          ) : (
+            <HotelDetailSkeleton />
+          )}
+          {/* Right column: room availability, PR 8. Reserved so the layout is final. */}
+          <div />
+        </div>
+      )}
     </div>
   )
 }

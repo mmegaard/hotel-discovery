@@ -19,7 +19,7 @@ describe('routes', () => {
 
   it('renders the hotel detail page for /hotels/:id', async () => {
     renderAt('/hotels/hotel-01')
-    expect(await screen.findByRole('heading', { name: 'Hotel hotel-01' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'The Grand Luminary' })).toBeInTheDocument()
   })
 
   it('shows the 404 page with a link back to search for unknown paths', async () => {

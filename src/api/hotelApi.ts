@@ -61,8 +61,8 @@ export async function getFilterOptions(
   }
 }
 
-export function getHotel(id: string): Promise<Hotel | undefined> {
-  return mock.getHotelById(id)
+export function getHotel(id: string, options?: mock.RequestOptions): Promise<Hotel | undefined> {
+  return mock.getHotelById(id, options)
 }
 
 export function getAvailableRooms(

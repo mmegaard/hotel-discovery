@@ -161,6 +161,24 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   toggling stars never refetches.
 - **Fixed-size toggles with a 2px border in both states,** so pressing one never shifts its neighbours.
 
+## Hotel detail
+
+- **Not found is a value, not an exception.** `useHotel` returns `status: 'not-found'` when the API answers with
+  nothing; the page renders the designed empty state with "Browse all hotels". No error boundary is needed for
+  the one failure the UI expects.
+- **Back link: history back when the user came from within the app, else `/hotels?city=<city>`.** React Router
+  keeps an index in `history.state`; a positive index means there is somewhere to go back to, which restores the
+  user's filters. A direct visit or shared link falls back to the search page pre-filtered to the hotel's city.
+  Rendered as a real link so the fallback shows in the status bar and works without JavaScript.
+- **No individual reviews.** The data has only an aggregate rating and count, so the header shows "4.8 out of 5 ·
+  1,240 reviews" and nothing else; a reviews section would be invented content.
+- **Address is one line** ("street, city, state zip, country") via `formatAddress`; the data has no locale
+  hints and every address is fine in that order.
+- **Skeleton mirrors the header and amenity boxes** so the page does not jump when the hotel arrives. The right
+  column is reserved at 440px for the availability panel (PR 8) so the two-column layout is final now.
+- **`RatingBadge` gained a size** rather than a second component; the detail header uses the large one with
+  "out of 5" beside it, per the wireframe.
+
 ## UI states
 
 Documented here as they are built.
@@ -171,10 +189,12 @@ Documented here as they are built.
 - **Refreshing** (search page): previous cards stay, dimmed to 60%, `aria-busy` on the results region.
 - **No hotels match** (search page, `role="status"`): dashed panel, "No hotels match these filters", hint, primary
   Reset filters button. The count line reads "0 of 40 hotels".
+- **Hotel not found** (`/hotels/hotel-99`, `role="status"`): dashed panel, "Hotel not found", one line, "Browse
+  all hotels" button link. The back link still works.
+- **Loading** (detail page): skeleton of the header and amenity boxes.
 - **No cities match** (combobox): one line inside the list, `No cities match "…"`; the input keeps its text.
 
-Still to build: availability idle; invalid date range; no rooms
-available; hotel has no open dates; hotel not found; 404; one-line loading.
+Still to build: availability idle; invalid date range; no rooms available; hotel has no open dates.
 
 ## Out of scope
 

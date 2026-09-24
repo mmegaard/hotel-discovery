@@ -65,3 +65,11 @@ what I decided, and what I changed by hand, so the line between assistance and a
   design for production volumes (no catalogue download, API-provided totals, paged contract) and put that rule in
   the skill; drop the wireframe's price tagline.
 - **I changed:** reviewed the PR before merge.
+
+## PR 7 — hotel detail
+
+- **AI produced:** `useHotel`, `HotelDetailPage`, `BackLink`, `HotelHeader`, `AmenityList`, `HotelDetailSkeleton`,
+  `formatAddress`, the large `RatingBadge`, page tests, and the detail notes in TRADEOFFS.md.
+- **I decided:** not-found as a value; back-link rule (history back, else search pre-filtered to the city); no
+  invented reviews section; reserve the availability column now.
+- **I changed:** reviewed the PR before merge.
