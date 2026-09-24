@@ -87,6 +87,28 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Amenities show three plus "+N more".** Per the design; the full list is on the detail page.
 - **Placeholder image is a crossed box.** The data has no images; a box keeps the card's shape honest.
 
+## Filters and the city combobox
+
+- **Filters live in the URL, nowhere else.** `useHotelFilters` is the only reader and writer of the query string;
+  `lib/filterParams.ts` does the parsing and serializing as pure functions. Malformed values are dropped, not
+  thrown; defaults are omitted so `/hotels` stays clean and equal filters give equal URLs. Filter changes use
+  `replace` so the back button leaves the search page instead of stepping through every keystroke.
+- **The typed city text lives on the page, not in the combobox.** Draft text is transient UI state, but two
+  buttons (the panel's Reset and the empty state's Reset) must clear it together with the URL, so `SearchPage` is
+  its closest common owner. `ui/Combobox` stays fully controlled and reusable.
+- **Combobox matching is a generic prefix match** on label, description, or selected text. For cities that gives
+  the design's rules (city, country, or "City, Country") without the component knowing what a city is.
+- **Typing after a selection keeps the text and drops the filter,** per DESIGN.md. The input then reads
+  "Seattle, USAx" with "No cities match" beneath; the list returns to all 40 hotels until a new option is picked.
+- **City options come from an unfiltered search.** The backend brief has no cities endpoint, so `useCityOptions`
+  derives them once from `GET /hotels`; a real API could swap in a dedicated call.
+- **A city in the URL that is not in the catalogue** (`?city=Nowhere`) filters to zero and shows the empty state
+  with a blank input, since there is no option to display. The URL is honoured rather than silently dropped.
+- **Two Reset buttons.** The panel's ghost "Reset filters" is always present; the empty state's primary one is
+  where the user is looking when nothing matches. Both call the same handler.
+- **Layout:** the dropdown overlays the results instead of pushing them, and the empty state takes the results
+  slot while the count line and filter panel stay put, so nothing above the user's focus moves.
+
 ## UI states
 
 Documented here as they are built.
@@ -94,8 +116,11 @@ Documented here as they are built.
 - **404** (`/anything`): mono "404", "Page not found", one-line explanation, "Search hotels" button link.
 
 - **Loading** (search page): "Loading hotels…" in the `aria-live` count region plus six skeleton cards.
+- **No hotels match** (search page, `role="status"`): dashed panel, "No hotels match these filters", hint, primary
+  Reset filters button. The count line reads "0 of 40 hotels".
+- **No cities match** (combobox): one line inside the list, `No cities match "…"`; the input keeps its text.
 
-Still to build: no hotels match; availability idle; invalid date range; no rooms
+Still to build: availability idle; invalid date range; no rooms
 available; hotel has no open dates; hotel not found; 404; one-line loading.
 
 ## Out of scope
