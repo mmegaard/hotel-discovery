@@ -6,13 +6,22 @@ import * as mock from './mockHotelApi'
 // camelCase) and maps to the backend contract, so replacing the mock with a
 // real client touches only this file and mockHotelApi.ts.
 
-export function searchHotels(filters: HotelFilters): Promise<Hotel[]> {
-  return mock.getHotels({
-    city: filters.city,
-    star_rating: filters.stars,
-    min_price: filters.minPrice,
-    max_price: filters.maxPrice,
-  })
+export type { RequestOptions } from './mockHotelApi'
+
+/** Rejects with an AbortError when `options.signal` fires, like fetch(). */
+export function searchHotels(
+  filters: HotelFilters,
+  options?: mock.RequestOptions,
+): Promise<Hotel[]> {
+  return mock.getHotels(
+    {
+      city: filters.city,
+      star_rating: filters.stars,
+      min_price: filters.minPrice,
+      max_price: filters.maxPrice,
+    },
+    options,
+  )
 }
 
 export function getHotel(id: string): Promise<Hotel | undefined> {

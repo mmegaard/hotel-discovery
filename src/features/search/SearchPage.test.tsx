@@ -44,6 +44,22 @@ describe('SearchPage', () => {
     expect(city).toHaveValue('Seattle, USA')
   })
 
+  it('a price range narrows the list and writes the URL', async () => {
+    const user = userEvent.setup()
+    const router = renderAt('/hotels')
+    await waitFor(() => expect(count()).toHaveTextContent(/^40 of 40 hotels$/))
+
+    const max = screen.getByRole('textbox', { name: 'Max' })
+    await user.clear(max)
+    await user.type(max, '100{Enter}')
+    expect(router.state.location.search).toBe('?maxPrice=100')
+
+    await waitFor(() => expect(count()).not.toHaveTextContent(/^40 of 40 hotels$/))
+    expect(cards().length).toBeGreaterThan(0)
+    expect(cards().length).toBeLessThan(40)
+    expect(screen.getByText('$75')).toBeInTheDocument()
+  })
+
   it('restores filters from the URL and shows the empty state with a working reset', async () => {
     const user = userEvent.setup()
     const router = renderAt('/hotels?city=Nowhere')

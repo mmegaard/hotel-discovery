@@ -13,7 +13,27 @@ const hotels: Hotel[] = seed
 /** Simulated network latency so loading states are visible in the browser.
  *  Zero under test so the suite stays fast. */
 const LATENCY_MS = import.meta.env.MODE === 'test' ? 0 : 400
-const delay = () => new Promise<void>((resolve) => setTimeout(resolve, LATENCY_MS))
+
+/** Resolves after the simulated latency, or rejects with an AbortError if the
+ *  caller gave up first, exactly as fetch() would. */
+function delay(signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) return reject(signal.reason)
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort)
+      resolve()
+    }, LATENCY_MS)
+    function onAbort() {
+      clearTimeout(timer)
+      reject(signal!.reason)
+    }
+    signal?.addEventListener('abort', onAbort, { once: true })
+  })
+}
+
+export interface RequestOptions {
+  signal?: AbortSignal
+}
 
 export interface GetHotelsParams {
   city?: string
@@ -25,8 +45,11 @@ export interface GetHotelsParams {
 }
 
 /** GET /hotels */
-export async function getHotels(params: GetHotelsParams = {}): Promise<Hotel[]> {
-  await delay()
+export async function getHotels(
+  params: GetHotelsParams = {},
+  options: RequestOptions = {},
+): Promise<Hotel[]> {
+  await delay(options.signal)
   return filterHotels(hotels, {
     city: params.city,
     stars: params.star_rating,

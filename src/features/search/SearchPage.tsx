@@ -73,7 +73,7 @@ export function SearchPage() {
           }
         />
       ) : (
-        <HotelList hotels={hotels} filters={filters} loading={status === 'loading'} />
+        <HotelList hotels={hotels} filters={filters} status={status} />
       )}
     </div>
   )
