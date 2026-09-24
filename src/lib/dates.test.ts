@@ -3,11 +3,13 @@ import {
   addDays,
   formatLong,
   formatUsDate,
+  fromLocalDate,
   isIsoDate,
   nightsBetween,
   nightsOf,
   parseUsDate,
   spans,
+  toLocalDate,
   today,
 } from './dates'
 
@@ -44,6 +46,15 @@ describe('dates', () => {
     expect(formatLong('2026-07-10')).toBe('Fri, Jul 10')
     expect(isIsoDate('2026-02-29')).toBe(false)
     expect(isIsoDate('2024-02-29')).toBe(true)
+  })
+
+  it('round-trips through local Date objects without shifting a day', () => {
+    const date = toLocalDate('2026-07-10')
+    expect([date.getFullYear(), date.getMonth(), date.getDate(), date.getHours()]).toEqual([
+      2026, 6, 10, 0,
+    ])
+    expect(fromLocalDate(date)).toBe('2026-07-10')
+    expect(fromLocalDate(toLocalDate('2026-01-01'))).toBe('2026-01-01')
   })
 
   it('spans groups consecutive days', () => {

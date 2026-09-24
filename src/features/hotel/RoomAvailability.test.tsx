@@ -79,19 +79,45 @@ describe('RoomAvailability', () => {
     expect(screen.getByText(/Choose your dates/)).toBeInTheDocument()
   })
 
+  it('opens the calendar on focus, fills both inputs from two clicks, and closes on Escape', async () => {
+    const user = userEvent.setup()
+    render(<RoomAvailability hotel={grand} />)
+    const cin = screen.getByRole('textbox', { name: 'Check-in' })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    await user.click(cin)
+    const dialog = screen.getByRole('dialog', { name: 'Choose check-in date' })
+    expect(cin).toHaveAttribute('aria-expanded', 'true')
+    const day = (n: number) =>
+      within(dialog).getByRole('button', { name: (name) => name.includes(`July ${n}`) })
+
+    await user.click(day(10))
+    expect(cin).toHaveValue('07/10/2026')
+    expect(screen.getByRole('dialog', { name: 'Choose check-out date' })).toBeInTheDocument()
+    await user.click(day(12))
+    expect(screen.getByRole('textbox', { name: 'Check-out' })).toHaveValue('07/12/2026')
+    expect(await screen.findAllByRole('article')).toHaveLength(2)
+
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
   it('shows the no-rooms state with a hint, and the no-open-dates copy for a hotel with none', async () => {
     const { unmount } = render(<RoomAvailability hotel={grand} />)
     await typeDates('07/13/2026', '07/14/2026')
-    const empty = await screen.findByRole('status')
-    expect(empty).toHaveTextContent('No rooms available for these dates')
+    const empty = (
+      await screen.findByRole('heading', { name: 'No rooms available for these dates' })
+    ).closest('[role="status"]')!
     expect(empty).toHaveTextContent('Try Jul 10–12.')
     unmount()
 
     render(<RoomAvailability hotel={noDates} />)
     expect(screen.getByText('This hotel has no open nights right now.')).toBeInTheDocument()
     await typeDates('07/10/2026', '07/11/2026')
-    expect(await screen.findByRole('status')).toHaveTextContent(
-      'This hotel has no open dates. Try another hotel.',
-    )
+    expect(
+      (await screen.findByRole('heading', { name: 'No rooms available for these dates' })).closest(
+        '[role="status"]',
+      ),
+    ).toHaveTextContent('This hotel has no open dates. Try another hotel.')
   })
 })

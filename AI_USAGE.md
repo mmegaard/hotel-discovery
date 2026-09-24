@@ -82,3 +82,12 @@ what I decided, and what I changed by hand, so the line between assistance and a
 - **I decided:** dates as panel-local state; live-apply typed dates with fallback on blur; ask the API for open
   rooms rather than filtering the in-memory hotel; skeletons sized to room cards.
 - **I changed:** reviewed the PR before merge.
+
+## PR 9 — date picker
+
+- **AI produced:** `ui/DatePicker` over react-day-picker with Tailwind slot classes and a custom caption, the
+  open/close wiring in `RoomAvailability`, `toLocalDate`/`fromLocalDate`, five tests, and the picker notes in
+  TRADEOFFS.md.
+- **I decided:** library for the grid, our own selection rule; inline placement per the wireframe; drop per-night
+  prices in the calendar.
+- **I changed:** reviewed the PR before merge.
