@@ -1,13 +1,15 @@
-import type { CityOption } from '../../api/logic/filters'
+import type { CityOption, StarOption } from '../../api/logic/filters'
 import { Button } from '../../components/ui/Button'
 import { Combobox } from '../../components/ui/Combobox'
 import { plural } from '../../lib/format'
 import type { HotelFilters } from '../../types/hotel'
 import { PriceRange } from './PriceRange'
+import { StarToggle } from './StarToggle'
 
 export interface FilterBarProps {
   filters: HotelFilters
   cityOptions: CityOption[]
+  starOptions: StarOption[]
   cityDraft: string
   onCityDraftChange: (text: string) => void
   onChange: (patch: Partial<HotelFilters>) => void
@@ -17,6 +19,7 @@ export interface FilterBarProps {
 export function FilterBar({
   filters,
   cityOptions,
+  starOptions,
   cityDraft,
   onCityDraftChange,
   onChange,
@@ -28,6 +31,14 @@ export function FilterBar({
     description: `${c.country} · ${plural(c.count, 'hotel')}`,
     selectedText: `${c.city}, ${c.country}`,
   }))
+  const selectedStars = filters.stars ?? []
+
+  function toggleStars(stars: number) {
+    const next = selectedStars.includes(stars)
+      ? selectedStars.filter((s) => s !== stars)
+      : [...selectedStars, stars].sort((a, b) => b - a)
+    onChange({ stars: next.length ? next : undefined })
+  }
 
   return (
     <section
@@ -51,6 +62,19 @@ export function FilterBar({
           Reset filters
         </Button>
       </div>
+
+      <fieldset className="flex flex-wrap items-center gap-3">
+        <legend className="float-left mr-2 w-22 text-[13px] font-medium">Star rating</legend>
+        {starOptions.map((option) => (
+          <StarToggle
+            key={option.stars}
+            stars={option.stars}
+            fromPrice={option.fromPrice}
+            pressed={selectedStars.includes(option.stars)}
+            onToggle={toggleStars}
+          />
+        ))}
+      </fieldset>
     </section>
   )
 }

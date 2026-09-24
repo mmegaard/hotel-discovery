@@ -1,18 +1,16 @@
 import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
-import { useCityOptions } from '../../hooks/useCityOptions'
+import { useFilterOptions } from '../../hooks/useFilterOptions'
 import { useHotelFilters } from '../../hooks/useHotelFilters'
 import { useHotels } from '../../hooks/useHotels'
 import { FilterBar } from './FilterBar'
 import { HotelList } from './HotelList'
 
-const TOTAL_HOTELS = 40
-
 export function SearchPage() {
   const { filters, updateFilters, reset: resetFilters } = useHotelFilters()
-  const cityOptions = useCityOptions()
-  const { hotels, status } = useHotels(filters)
+  const options = useFilterOptions(filters)
+  const { hotels, total, status } = useHotels(filters)
   // Text typed into the city box before an option is chosen. Lives here, not
   // in FilterBar, so both Reset buttons clear it together with the URL.
   const [cityDraft, setCityDraft] = useState('')
@@ -30,25 +28,23 @@ export function SearchPage() {
 
       <FilterBar
         filters={filters}
-        cityOptions={cityOptions}
+        cityOptions={options.cities}
+        starOptions={options.stars}
         cityDraft={cityDraft}
         onCityDraftChange={setCityDraft}
         onChange={updateFilters}
         onReset={reset}
       />
 
-      <div className="flex items-baseline justify-between">
-        <p aria-live="polite" className="text-[15px]">
-          {status === 'loading' ? (
-            'Loading hotels…'
-          ) : (
-            <>
-              <strong>{hotels.length}</strong> of {TOTAL_HOTELS} hotels
-            </>
-          )}
-        </p>
-        <p className="text-[13px] text-muted">Prices are the lowest nightly rate in your range</p>
-      </div>
+      <p aria-live="polite" className="text-[15px]">
+        {status === 'loading' ? (
+          'Loading hotels…'
+        ) : (
+          <>
+            <strong>{total}</strong> of {options.totalHotels} hotels
+          </>
+        )}
+      </p>
 
       {empty ? (
         <EmptyState

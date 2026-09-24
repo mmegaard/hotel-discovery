@@ -60,6 +60,30 @@ describe('SearchPage', () => {
     expect(screen.getByText('$75')).toBeInTheDocument()
   })
 
+  it('star toggles multi-select, show a from price, and can produce the empty state', async () => {
+    const user = userEvent.setup()
+    const router = renderAt('/hotels?city=Chicago')
+    await waitFor(() => expect(count()).toHaveTextContent(/^4 of 40 hotels$/))
+
+    const five = await screen.findByRole('button', { name: '5 stars, from $199' })
+    expect(five).toHaveAttribute('aria-pressed', 'false')
+    await user.click(five)
+    expect(five).toHaveAttribute('aria-pressed', 'true')
+    expect(router.state.location.search).toBe('?city=Chicago&stars=5')
+    await waitFor(() => expect(count()).toHaveTextContent(/^1 of 40 hotels$/))
+
+    await user.click(screen.getByRole('button', { name: /^4 stars, from/ }))
+    expect(router.state.location.search).toBe('?city=Chicago&stars=5%2C4')
+    await waitFor(() => expect(count()).toHaveTextContent(/^2 of 40 hotels$/))
+
+    // No 1-star hotels exist; the toggle still works and yields the empty state on its own.
+    await user.click(five)
+    await user.click(screen.getByRole('button', { name: /^4 stars, from/ }))
+    await user.click(screen.getByRole('button', { name: '1 star, no matches' }))
+    expect(router.state.location.search).toBe('?city=Chicago&stars=1')
+    expect(await screen.findByRole('status')).toHaveTextContent('No hotels match these filters')
+  })
+
   it('restores filters from the URL and shows the empty state with a working reset', async () => {
     const user = userEvent.setup()
     const router = renderAt('/hotels?city=Nowhere')

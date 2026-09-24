@@ -35,6 +35,15 @@ Use the Tailwind theme tokens (accent, ink, muted, line, page, panel) — never 
 44px minimum targets, visible 3px focus ring, `aria-pressed` for toggles, `role="alert"` for validation, `aria-live="polite"`
 for counts. States never differ by hue alone.
 
+## Design for production data
+
+The seed has 40 hotels; the design must hold at 100,000. Never fetch the whole catalogue to derive something
+the server should compute (option lists, counts, facets, "from" prices): add an endpoint to the mock and a
+matching `api/hotelApi.ts` call instead. Never hard-code totals; every list response carries `total` and
+page parameters even when the mock returns everything. Debounce and abort queries in hooks. Compute in
+components only what is derived from the data already on screen. The one deliberate demo shortcut is the
+fake `today()` in `lib/dates.ts`. If a shortcut is unavoidable, record it in TRADEOFFS.md as "demo only".
+
 ## No layout jumps
 
 Every async or conditional state reserves the space its content will take, so nothing on screen moves when data
