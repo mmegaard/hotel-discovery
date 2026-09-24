@@ -176,6 +176,9 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   hints and every address is fine in that order.
 - **Skeleton mirrors the header and amenity boxes** so the page does not jump when the hotel arrives. The right
   column is reserved at 440px for the availability panel (PR 8) so the two-column layout is final now.
+- **The detail grid collapses to one column below 1024px,** with availability dropping under the amenities.
+  Desktop stays the designed layout; this is the one responsive rule in the app, so a narrower window still reads
+  in order. A full mobile pass (filter bar, cards, touch targets at 375px) remains out of scope.
 - **`RatingBadge` gained a size** rather than a second component; the detail header uses the large one with
   "out of 5" beside it, per the wireframe.
 

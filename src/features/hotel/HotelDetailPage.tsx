@@ -32,7 +32,7 @@ export function HotelDetailPage() {
           />
         </div>
       ) : (
-        <div className="grid grid-cols-[minmax(0,1fr)_440px] items-start gap-8">
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_440px]">
           {hotel ? (
             <div className="flex flex-col gap-6">
               <HotelHeader hotel={hotel} />
@@ -41,7 +41,7 @@ export function HotelDetailPage() {
           ) : (
             <HotelDetailSkeleton />
           )}
-          {/* Right column: room availability, PR 8. Reserved so the layout is final. */}
+          {/* Availability panel (PR 8): right column from 1024px, below the amenities under that. */}
           <div />
         </div>
       )}
