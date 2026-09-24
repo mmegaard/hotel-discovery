@@ -1,6 +1,8 @@
 import { Link } from 'react-router'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 
 export function NotFoundPage() {
+  useDocumentTitle('Page not found')
   return (
     <div className="flex grow flex-col items-center justify-center gap-3 text-center">
       <p className="font-mono text-sm text-muted">404</p>

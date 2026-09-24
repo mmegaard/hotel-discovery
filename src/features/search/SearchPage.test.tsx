@@ -42,6 +42,7 @@ describe('SearchPage', () => {
     expect(cards()).toHaveLength(4)
     expect(router.state.location.search).toBe('?city=Seattle')
     expect(city).toHaveValue('Seattle, USA')
+    expect(document.title).toBe('Hotels in Seattle · StayFinder')
   })
 
   it('a price range narrows the list and writes the URL', async () => {

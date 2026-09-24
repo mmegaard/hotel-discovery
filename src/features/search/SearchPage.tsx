@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useFilterOptions } from '../../hooks/useFilterOptions'
 import { useHotelFilters } from '../../hooks/useHotelFilters'
 import { useHotels } from '../../hooks/useHotels'
@@ -20,7 +21,10 @@ export function SearchPage() {
     resetFilters()
   }
 
-  const empty = status === 'success' && hotels.length === 0
+  useDocumentTitle(filters.city ? `Hotels in ${filters.city}` : 'Find a hotel')
+
+  // Keep the empty state up while a change to an empty result is answered.
+  const empty = (status === 'success' || status === 'refreshing') && hotels.length === 0
 
   return (
     <div className="flex grow flex-col gap-5 px-10 pt-7">
@@ -39,6 +43,8 @@ export function SearchPage() {
       <p aria-live="polite" className="text-[15px]">
         {status === 'loading' ? (
           'Loading hotels…'
+        ) : status === 'error' ? (
+          'Couldn’t load hotels. Check your connection and try again.'
         ) : (
           <>
             <strong>{total}</strong> of {options.totalHotels} hotels
@@ -46,7 +52,7 @@ export function SearchPage() {
         )}
       </p>
 
-      {empty ? (
+      {status === 'error' ? null : empty ? (
         <EmptyState
           title="No hotels match these filters"
           description="Try a wider price range or fewer star ratings."

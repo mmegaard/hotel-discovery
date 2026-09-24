@@ -27,7 +27,8 @@ npm run dev        # http://localhost:5173
 | `npm run build`     | Production build to `dist/`                |
 | `npm run preview`   | Serve the production build                 |
 
-Definition of done for every PR was `npm run typecheck && npm run lint && npm test && npm run build`.
+Definition of done for every PR was `npm run typecheck && npm run lint && npm test && npm run build`; CI
+(`.github/workflows/ci.yml`) runs the same plus a format check on every push and pull request.
 
 ### The demo clock
 
@@ -48,8 +49,9 @@ The switch is `today()` in `src/lib/dates.ts`; nothing else knows the date is fa
 3. Press **5 stars**: one hotel. Press **1 star** alone: no 1-star hotels exist, so the empty state appears with
    a Reset button.
 4. Reload any filtered URL: the filters come back from the query string.
-5. Open **The Grand Luminary**. Focus **Check-in** to get the calendar; click July 10 then July 12. Two room types,
-   with nightly price and stay total. Try July 10 → 13: one room open, the other named as not open.
+5. Open **The Grand Luminary**. Availability is prefilled to tonight (July 9 → 10): no rooms, with the hint
+   "Try Jul 10–12". Focus **Check-in** to get the calendar; click July 10 then July 12. Two room types, with
+   nightly price and stay total. Try July 10 → 13: one room open, the other named as not open.
 6. Type `07/12/2026` as check-out with check-in `07/12/2026`: the validation alert. Open hotel-04: "This hotel
    has no open dates."
 7. `/hotels/hotel-99` shows "Hotel not found"; `/anything` shows the 404.
@@ -67,11 +69,13 @@ URL  →  page  →  hook  →  api  →  pure logic
 
 - **Pages** (`src/features/*/…Page.tsx`) are the only components that read the URL and call data hooks.
 - **Hooks** (`src/hooks/`) call `api/hotelApi.ts` and expose `{ data, status }`. `useQuery` is the one
-  `useEffect` that talks to the API: it debounces (250ms), aborts superseded requests, and derives a
-  `loading | refreshing | success | idle` status from whether the last answer matches the current key.
+  `useEffect` that talks to the API: it aborts superseded requests, turns a failure into `status: 'error'`,
+  and derives `idle | loading | refreshing | success | error` from whether the last answer matches the current
+  key. Only price changes are debounced (`useFilterDebounce`); clicks query at once.
 - **API** (`src/api/hotelApi.ts`) speaks the UI's vocabulary and maps onto the backend contract.
-  `mockHotelApi.ts` is an in-memory server behind the same contract, with 400ms of simulated latency in the
-  browser and an `AbortSignal` like `fetch()`. Replacing it with a real client touches these two files only.
+  `mockHotelApi.ts` is an in-memory server behind the same contract, with simulated latency
+  (`VITE_MOCK_LATENCY_MS`, default 400ms, 0 under test) and an `AbortSignal` like `fetch()`. Replacing it with
+  a real client touches these two files only.
 - **Pure logic** (`src/api/logic/`, `src/lib/`) holds every rule: filtering, availability, date maths,
   URL parsing, formatting. All unit-tested with no React.
 - **`components/ui/`** are props-only and know nothing about hotels or the router. **`features/`** components
@@ -116,12 +120,12 @@ AppLayout                        header + <Outlet />
 │   ├── HotelList → HotelCard    or HotelCardSkeleton ×6 while loading
 │   └── ui/EmptyState            "No hotels match these filters" + Reset
 ├── /hotels/:id  HotelDetailPage useHotel
-│   ├── BackLink                 history back, else /hotels?city=<city>
+│   ├── BackLink                 history back if arrived from search, else /hotels?city=<city>
 │   ├── HotelHeader              image, name, stars, address, rating, policies, contact
 │   ├── AmenityList
 │   ├── RoomAvailability         useRoomAvailability; dates as local state
 │   │   ├── ui/DateInput ×2      typed MM/DD/YYYY, opens the picker on focus
-│   │   ├── ui/DatePicker        react-day-picker range mode, styled with theme tokens
+│   │   ├── ui/DatePicker        react-day-picker range mode, styled with theme tokens, lazy-loaded
 │   │   ├── RoomCard ×N          type, $/night, beds · sleeps · sq ft, stay total
 │   │   └── ui/EmptyState        no rooms / no open dates
 │   └── ui/EmptyState            "Hotel not found"
@@ -133,7 +137,8 @@ AppLayout                        header + <Outlet />
 - **No layout jumps.** Every async state reserves the space its content will take: skeletons match the real
   boxes, refreshing dims the old list instead of replacing it, empty states take the results slot.
 - **Design for production data.** Nothing derives from "there are 40 hotels": options and totals come from
-  endpoints, responses are paged, queries are debounced and abortable.
+  endpoints, responses are paged, queries are abortable, continuous inputs are debounced, failures are a
+  documented state, and the calendar is code-split. Bundle: 116 KB gzipped plus 21 KB for the calendar on demand.
 - **One accent, states never differ by hue alone.** 44px targets, a 3px focus ring, `aria-pressed`,
   `aria-live`, `role="alert"` and `role="status"` where the design calls for them.
 
@@ -141,12 +146,12 @@ These live in `.claude/skills/hotel-discovery/SKILL.md`, the conventions file th
 
 ## Tests
 
-67 tests in ~2 seconds, colocated with the code they cover.
+72 tests in ~2 seconds, colocated with the code they cover.
 
 - **Pure logic**: one test per rule in TRADEOFFS.md (city match, any-room price rule, multi-star, night
   semantics, date parsing edge cases, URL round-trips).
-- **Hooks**: `useQuery` for loading → refreshing → success, debounce timing with fake timers, abort of
-  superseded requests, idle while disabled.
+- **Hooks**: `useQuery` for loading → refreshing → success, error status, debounce timing with fake timers,
+  abort of superseded requests, idle while disabled; `useFilterDebounce` for price-only changes.
 - **UI leaves with logic**: Combobox keyboard and matching, NumberInput live apply and fallback, DateInput,
   DatePicker selection rule and disabled days.
 - **Pages**: rendered inside a memory router against the real mock: filters write the URL and narrow the
@@ -157,6 +162,6 @@ rather than reading the wall clock.
 
 ## Repository
 
-Ten PRs, one per feature, merged with merge commits so the history reads as the roadmap:
+Eleven PRs, one per feature, merged with merge commits so the history reads as the roadmap:
 bootstrap → app shell → api layer → search list → city filter → price filter → star filter → hotel detail →
-room availability → date picker → this README.
+room availability → date picker → README → production hardening.

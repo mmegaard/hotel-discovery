@@ -15,15 +15,33 @@ const summary = () =>
 
 async function typeDates(checkIn: string, checkOut: string) {
   const user = userEvent.setup()
-  await user.type(screen.getByRole('textbox', { name: 'Check-in' }), checkIn)
-  await user.type(screen.getByRole('textbox', { name: 'Check-out' }), checkOut)
+  const cin = screen.getByRole('textbox', { name: 'Check-in' })
+  const cout = screen.getByRole('textbox', { name: 'Check-out' })
+  await user.clear(cin)
+  await user.type(cin, checkIn)
+  await user.clear(cout)
+  await user.type(cout, checkOut)
   return user
 }
 
 describe('RoomAvailability', () => {
-  it('starts idle with the open-nights hint and the room-type count', () => {
+  it('starts with a one-night stay from today and answers at once', async () => {
     render(<RoomAvailability hotel={grand} />)
+    expect(screen.getByRole('textbox', { name: 'Check-in' })).toHaveValue('07/09/2026')
+    expect(screen.getByRole('textbox', { name: 'Check-out' })).toHaveValue('07/10/2026')
     expect(screen.getByText('Open nights at this hotel: Jul 10–12, 2026')).toBeInTheDocument()
+    // July 9 is not an open night at this hotel, so the answer is the empty state with the hint.
+    const empty = (
+      await screen.findByRole('heading', { name: 'No rooms available for these dates' })
+    ).closest('[role="status"]')!
+    expect(empty).toHaveTextContent('Try Jul 10–12.')
+  })
+
+  it('shows the idle hint when the dates are cleared', async () => {
+    render(<RoomAvailability hotel={grand} />)
+    const user = userEvent.setup()
+    await user.clear(screen.getByRole('textbox', { name: 'Check-in' }))
+    await user.tab()
     expect(screen.getByText(/Choose your dates to see which rooms are open/)).toHaveTextContent(
       '2 room types',
     )
@@ -86,7 +104,7 @@ describe('RoomAvailability', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 
     await user.click(cin)
-    const dialog = screen.getByRole('dialog', { name: 'Choose check-in date' })
+    const dialog = await screen.findByRole('dialog', { name: 'Choose check-in date' })
     expect(cin).toHaveAttribute('aria-expanded', 'true')
     const day = (n: number) =>
       within(dialog).getByRole('button', { name: (name) => name.includes(`July ${n}`) })

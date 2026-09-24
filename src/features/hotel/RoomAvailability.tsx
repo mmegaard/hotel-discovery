@@ -1,13 +1,18 @@
-import { useRef, useState, type KeyboardEvent } from 'react'
+import { lazy, Suspense, useRef, useState, type KeyboardEvent } from 'react'
 import { isValidStay, openNights } from '../../api/logic/availability'
 import { DateInput } from '../../components/ui/DateInput'
-import { DatePicker } from '../../components/ui/DatePicker'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { useRoomAvailability } from '../../hooks/useRoomAvailability'
 import { addDays, formatLong, nightsBetween, spans, today, type IsoDate } from '../../lib/dates'
 import { plural } from '../../lib/format'
 import type { Hotel } from '../../types/hotel'
 import { RoomCard } from './RoomCard'
+
+// The calendar (react-day-picker + date-fns) loads on first focus, so the
+// search page and the initial detail render never pay for it.
+const DatePicker = lazy(() =>
+  import('../../components/ui/DatePicker').then((m) => ({ default: m.DatePicker })),
+)
 
 export interface RoomAvailabilityProps {
   hotel: Hotel
@@ -16,8 +21,10 @@ export interface RoomAvailabilityProps {
 /** Check-in / check-out inputs and the rooms open for every night between
  *  them. Dates are local state: they belong to this panel, not the URL. */
 export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
-  const [checkIn, setCheckIn] = useState<IsoDate>()
-  const [checkOut, setCheckOut] = useState<IsoDate>()
+  // Prefilled to a one-night stay from today, so the panel answers at once;
+  // the user changes either end from there.
+  const [checkIn, setCheckIn] = useState<IsoDate | undefined>(() => today())
+  const [checkOut, setCheckOut] = useState<IsoDate | undefined>(() => addDays(today(), 1))
   // Which input the calendar is attached to; null when closed.
   const [picker, setPicker] = useState<'from' | 'to' | null>(null)
   const datesRef = useRef<HTMLDivElement>(null)
@@ -87,22 +94,31 @@ export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
         </p>
 
         {picker && (
-          <DatePicker
-            value={{ from: checkIn, to: checkOut }}
-            focus={picker}
-            today={today()}
-            onChange={({ from, to }, next) => {
-              setCheckIn(from)
-              setCheckOut(to)
-              setPicker(next)
-            }}
-            onClear={() => {
-              setCheckIn(undefined)
-              setCheckOut(undefined)
-              setPicker('from')
-            }}
-            onDone={() => setPicker(null)}
-          />
+          <Suspense
+            fallback={
+              <div
+                aria-hidden="true"
+                className="h-[434px] animate-pulse rounded-xl border border-line-strong bg-white"
+              />
+            }
+          >
+            <DatePicker
+              value={{ from: checkIn, to: checkOut }}
+              focus={picker}
+              today={today()}
+              onChange={({ from, to }, next) => {
+                setCheckIn(from)
+                setCheckOut(to)
+                setPicker(next)
+              }}
+              onClear={() => {
+                setCheckIn(undefined)
+                setCheckOut(undefined)
+                setPicker('from')
+              }}
+              onDone={() => setPicker(null)}
+            />
+          </Suspense>
         )}
       </div>
 
@@ -134,6 +150,12 @@ export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
               <path d="M12 7v6M12 17h.01" />
             </svg>
             Check-out must be after check-in.
+          </p>
+        )}
+
+        {ready && !invalid && status === 'error' && (
+          <p role="status" className="text-sm text-muted">
+            Couldn’t check availability. Check your connection and try again.
           </p>
         )}
 

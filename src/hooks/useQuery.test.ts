@@ -4,6 +4,7 @@ import { useQuery } from './useQuery'
 
 // A fetch whose answers are released by the test.
 const answer: Array<(value: string) => void> = []
+const rejecters: Array<(reason: unknown) => void> = []
 const signals: AbortSignal[] = []
 const fetch = (signal: AbortSignal) =>
   new Promise<string>((resolve, reject) => {
@@ -14,11 +15,31 @@ const fetch = (signal: AbortSignal) =>
 
 afterEach(() => {
   answer.length = 0
+  rejecters.length = 0
   signals.length = 0
   vi.useRealTimers()
 })
 
 describe('useQuery', () => {
+  it('reports a failed request as an error status and recovers on the next key', async () => {
+    const failing = (signal: AbortSignal) =>
+      new Promise<string>((resolve, reject) => {
+        answer.push(resolve)
+        signals.push(signal)
+        rejecters.push(reject)
+      })
+    const { result, rerender } = renderHook((key: string) => useQuery(key, failing), {
+      initialProps: 'a',
+    })
+    await act(async () => rejecters.shift()!(new Error('boom')))
+    expect(result.current).toEqual({ data: undefined, status: 'error' })
+
+    rerender('b')
+    expect(result.current.status).toBe('loading')
+    await act(async () => answer.pop()!('B'))
+    expect(result.current).toEqual({ data: 'B', status: 'success' })
+  })
+
   it('stays idle and fetches nothing while disabled, then loads once enabled', async () => {
     const spy = vi.fn(fetch)
     const { result, rerender } = renderHook((enabled: boolean) => useQuery('a', spy, { enabled }), {

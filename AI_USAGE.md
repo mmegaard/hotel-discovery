@@ -108,3 +108,13 @@ slider, star prices and calendar, which TRADEOFFS.md marks as the first things t
 - **I decided:** README structure (run, try it, how it is built, state, contract, component map, tests); flip
   the repository public before the interview.
 - **I changed:** reviewed the PR before merge.
+
+## PR 11 — production hardening
+
+- **AI produced:** the production-readiness review, `status: 'error'` in `useQuery` with the three one-line
+  error states, `useFilterDebounce`, `useDocumentTitle`, the `state.fromSearch` back link, the lazy-loaded
+  calendar, the "No rooms listed" card state, the CI workflow, the prefilled dates, seven tests, and the
+  hardening notes in TRADEOFFS.md.
+- **I decided:** no error boundary or retry UI (the brief does not ask for them; documented error states only);
+  prefill availability to today → tomorrow; keep the fake today ungated so a demo build still books.
+- **I changed:** reviewed the PR before merge.
