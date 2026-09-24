@@ -4,19 +4,19 @@ import { describe, expect, it, vi } from 'vitest'
 import { PriceRange } from './PriceRange'
 
 describe('PriceRange', () => {
-  it('keeps min and max ordered and emits undefined at the bounds', async () => {
+  it('keeps min and max ordered, applies as you type, and emits undefined at the bounds', async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()
     render(<PriceRange minPrice={100} maxPrice={300} onChange={onChange} />)
 
     const min = screen.getByRole('spinbutton', { name: 'Min' })
     await user.clear(min)
-    await user.type(min, '400{Enter}')
-    expect(onChange).toHaveBeenLastCalledWith({ minPrice: 300, maxPrice: 300 })
+    await user.type(min, '400')
+    expect(onChange).toHaveBeenLastCalledWith({ minPrice: 300, maxPrice: 300 }) // clamped to max, no Enter needed
 
     const max = screen.getByRole('spinbutton', { name: 'Max' })
     await user.clear(max)
-    await user.type(max, '600{Enter}')
+    await user.type(max, '600')
     expect(onChange).toHaveBeenLastCalledWith({ minPrice: 100, maxPrice: undefined })
   })
 

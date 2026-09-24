@@ -116,8 +116,12 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Two native `<input type="range">` stacked on one track** instead of a slider library: keyboard, screen-reader
   and touch support come free, and the only trick is `pointer-events: none` on the inputs with `auto` on the
   thumbs. Thumb styling uses Tailwind's pseudo-element variants inline, so no CSS file is touched.
-- **Number inputs commit on blur or Enter, not per keystroke.** Clamping while typing would turn "1" into "50"
-  before the user reaches "100". The slider commits continuously because each step is already a valid value.
+- **Number inputs apply live, but only valid values.** Every keystroke or spin that yields a value inside
+  $50–$600 is snapped to the $5 step and applied at once, moving the slider and the list. Out-of-range drafts
+  ("1" on the way to "100", or "9999") stay in the box and are clamped on blur or Enter. The box keeps what was
+  typed until blur even if the applied value was clamped against the other handle, so the cursor is never fought.
+- **No debounce.** Each applied value is one `replace` navigation and one in-memory query; the refreshing state
+  keeps the list stable. With a real API the fetch inside `useHotels` would be debounced, not the URL update.
 - **Handles cannot cross:** the slider keeps min ≤ max − $5; the inputs clamp min up to max and max down to min.
 - **Values at the bounds are written as `undefined`,** so an untouched slider leaves the URL clean and does not
   trigger a refetch with a different key.

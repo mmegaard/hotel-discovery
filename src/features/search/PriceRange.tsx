@@ -35,7 +35,7 @@ export function PriceRange({
           min={PRICE_MIN}
           max={PRICE_MAX}
           step={PRICE_STEP}
-          onCommit={(v) => emit(Math.min(v, maxPrice), maxPrice)}
+          onChange={(v) => emit(Math.min(v, maxPrice), maxPrice)}
         />
         <RangeSlider
           min={PRICE_MIN}
@@ -53,7 +53,7 @@ export function PriceRange({
           min={PRICE_MIN}
           max={PRICE_MAX}
           step={PRICE_STEP}
-          onCommit={(v) => emit(minPrice, Math.max(v, minPrice))}
+          onChange={(v) => emit(minPrice, Math.max(v, minPrice))}
         />
       </div>
     </fieldset>

@@ -8,9 +8,10 @@ export interface NumberInputProps {
   max: number
   step?: number
   prefix?: string
-  /** Called with a clamped integer on blur or Enter. Never called while typing,
-   *  so a user can type "100" without "1" being clamped to the minimum. */
-  onCommit: (value: number) => void
+  /** Called with a value inside [min, max], rounded to the step. Fires on every
+   *  keystroke or spin that yields a valid value, and on blur or Enter with the
+   *  clamped value otherwise, so "100" can be typed without "1" being clamped. */
+  onChange: (value: number) => void
 }
 
 export function NumberInput({
@@ -21,16 +22,24 @@ export function NumberInput({
   max,
   step = 1,
   prefix,
-  onCommit,
+  onChange,
 }: NumberInputProps) {
   // Draft while focused; null means "show the committed value".
   const [draft, setDraft] = useState<string | null>(null)
 
+  const parse = (text: string) => (text.trim() === '' ? NaN : Number(text))
+  const snap = (n: number) => Math.min(max, Math.max(min, Math.round(n / step) * step))
+
+  function onInput(text: string) {
+    setDraft(text)
+    const n = parse(text)
+    if (n >= min && n <= max) onChange(snap(n))
+  }
+
   function commit() {
     if (draft !== null) {
-      const n = Number(draft)
-      if (draft.trim() !== '' && Number.isFinite(n))
-        onCommit(Math.min(max, Math.max(min, Math.round(n))))
+      const n = parse(draft)
+      if (Number.isFinite(n)) onChange(snap(n))
     }
     setDraft(null)
   }
@@ -54,7 +63,7 @@ export function NumberInput({
         max={max}
         step={step}
         value={draft ?? value}
-        onChange={(e) => setDraft(e.target.value)}
+        onChange={(e) => onInput(e.target.value)}
         onBlur={commit}
         onKeyDown={onKeyDown}
         className="w-13 bg-transparent pl-0.5 text-[15px] text-ink"
