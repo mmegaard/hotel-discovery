@@ -182,6 +182,27 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **`RatingBadge` gained a size** rather than a second component; the detail header uses the large one with
   "out of 5" beside it, per the wireframe.
 
+## Room availability
+
+- **Dates are local state on the panel, not in the URL.** A stay is a question the user asks of one hotel, not a
+  view worth sharing; keeping it out of the URL keeps `/hotels/:id` canonical. Check-in and check-out reset when
+  the user leaves the page.
+- **Typed dates apply live once complete and valid,** like the price boxes: a real MM/DD/YYYY on or after today
+  for check-in (after today for check-out) applies as typed; anything else stays in the box until blur, then the
+  box falls back. Clearing the box clears the date.
+- **A new check-in that overtakes the check-out clears the check-out** (per the wireframe), so the only way to
+  reach the invalid state is typing a check-out on or before the check-in, which shows the `role="alert"`.
+- **The panel asks the API, not the hotel object.** `useRoomAvailability` calls `GET /hotels/:id/rooms` for the
+  open rooms even though every room is already in memory, so the layering matches a real backend where
+  availability is not embedded in the hotel. The closed list is derived from the hotel's rooms minus the answer.
+  The query is disabled (`useQuery` "idle") until both dates form a valid stay.
+- **Loading shows room-card-sized skeletons** so the panel does not jump; a re-query for new dates keeps the
+  previous cards dimmed.
+- **Open-nights hint** ("Open nights at this hotel: Jul 10–12, 2026") stays under the inputs in every state, so
+  the user knows what to type before they type it. Runs of consecutive dates come from `spans()`.
+- **`EmptyState` gained `compact` and `headingLevel`** rather than a second component: inside the panel it sits
+  under an h2, so its title is an h3.
+
 ## UI states
 
 Documented here as they are built.
@@ -195,9 +216,16 @@ Documented here as they are built.
 - **Hotel not found** (`/hotels/hotel-99`, `role="status"`): dashed panel, "Hotel not found", one line, "Browse
   all hotels" button link. The back link still works.
 - **Loading** (detail page): skeleton of the header and amenity boxes.
+- **Availability idle** (detail panel): "Choose your dates to see which rooms are open. This hotel offers N
+  room types." in a tinted box.
+- **Invalid date range** (`role="alert"`): "Check-out must be after check-in." with an icon, replacing results.
+- **Checking availability** (detail panel): one line plus one skeleton per room type.
+- **No rooms available** (`role="status"`, compact): "No rooms available for these dates" and "Try Jul 10–12."
+- **Hotel has no open dates**: hint reads "This hotel has no open nights right now." and the empty state says
+  "This hotel has no open dates. Try another hotel."
 - **No cities match** (combobox): one line inside the list, `No cities match "…"`; the input keeps its text.
 
-Still to build: availability idle; invalid date range; no rooms available; hotel has no open dates.
+All designed states are built.
 
 ## Out of scope
 

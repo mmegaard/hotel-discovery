@@ -5,6 +5,7 @@ import { AmenityList } from './AmenityList'
 import { BackLink } from './BackLink'
 import { HotelDetailSkeleton } from './HotelDetailSkeleton'
 import { HotelHeader } from './HotelHeader'
+import { RoomAvailability } from './RoomAvailability'
 
 export function HotelDetailPage() {
   const { id = '' } = useParams()
@@ -41,8 +42,14 @@ export function HotelDetailPage() {
           ) : (
             <HotelDetailSkeleton />
           )}
-          {/* Availability panel (PR 8): right column from 1024px, below the amenities under that. */}
-          <div />
+          {hotel ? (
+            <RoomAvailability hotel={hotel} />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="h-70 animate-pulse rounded-xl border border-line bg-white"
+            />
+          )}
         </div>
       )}
     </div>

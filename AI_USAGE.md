@@ -73,3 +73,12 @@ what I decided, and what I changed by hand, so the line between assistance and a
 - **I decided:** not-found as a value; back-link rule (history back, else search pre-filtered to the city); no
   invented reviews section; reserve the availability column now.
 - **I changed:** reviewed the PR before merge.
+
+## PR 8 — room availability
+
+- **AI produced:** `ui/DateInput`, `useRoomAvailability`, `RoomAvailability` with its five states, `RoomCard`, the
+  `enabled`/idle option on `useQuery`, `EmptyState` compact mode, nine tests, and the availability notes in
+  TRADEOFFS.md.
+- **I decided:** dates as panel-local state; live-apply typed dates with fallback on blur; ask the API for open
+  rooms rather than filtering the in-memory hotel; skeletons sized to room cards.
+- **I changed:** reviewed the PR before merge.

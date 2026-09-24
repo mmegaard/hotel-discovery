@@ -69,6 +69,7 @@ export function getAvailableRooms(
   id: string,
   checkIn: IsoDate,
   checkOut: IsoDate,
+  options?: mock.RequestOptions,
 ): Promise<Room[] | undefined> {
-  return mock.getHotelRooms(id, checkIn, checkOut)
+  return mock.getHotelRooms(id, checkIn, checkOut, options)
 }

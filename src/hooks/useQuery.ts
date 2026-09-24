@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 
-export type QueryStatus = 'loading' | 'refreshing' | 'success'
+export type QueryStatus = 'idle' | 'loading' | 'refreshing' | 'success'
 
 export interface QueryState<T> {
-  /** The latest answer; undefined only while `loading`. */
+  /** The latest answer; undefined while `idle` or `loading`. */
   data: T | undefined
-  /** loading: nothing yet. refreshing: the key changed, showing the previous
-   *  answer until the new one lands. */
+  /** idle: not enabled, nothing fetched. loading: nothing yet. refreshing: the
+   *  key changed, showing the previous answer until the new one lands. */
   status: QueryStatus
 }
 
@@ -15,6 +15,9 @@ export interface UseQueryOptions {
    *  changes a second; only the last one should reach the server. Zero
    *  queries synchronously (the test default). */
   debounceMs?: number
+  /** False skips fetching entirely (status "idle"), e.g. until the user has
+   *  filled in every input the query needs. */
+  enabled?: boolean
 }
 
 export const DEFAULT_DEBOUNCE_MS = import.meta.env.MODE === 'test' ? 0 : 250
@@ -26,7 +29,7 @@ export const DEFAULT_DEBOUNCE_MS = import.meta.env.MODE === 'test' ? 0 : 250
 export function useQuery<T>(
   key: string,
   fetch: (signal: AbortSignal) => Promise<T>,
-  { debounceMs = DEFAULT_DEBOUNCE_MS }: UseQueryOptions = {},
+  { debounceMs = DEFAULT_DEBOUNCE_MS, enabled = true }: UseQueryOptions = {},
 ): QueryState<T> {
   const [result, setResult] = useState<{ key: string; data: T } | null>(null)
   // Callers pass a fresh closure every render; only `key` should re-run the
@@ -38,6 +41,7 @@ export function useQuery<T>(
   })
 
   useEffect(() => {
+    if (!enabled) return
     let ignore = false
     const controller = new AbortController()
     const run = () => {
@@ -56,8 +60,9 @@ export function useQuery<T>(
       clearTimeout(timer)
       controller.abort()
     }
-  }, [key, debounceMs])
+  }, [key, debounceMs, enabled])
 
+  if (!enabled) return { data: undefined, status: 'idle' }
   if (!result) return { data: undefined, status: 'loading' }
   return { data: result.data, status: result.key === key ? 'success' : 'refreshing' }
 }
