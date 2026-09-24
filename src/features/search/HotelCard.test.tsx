@@ -23,4 +23,14 @@ describe('HotelCard', () => {
     expect(screen.getByText('+3 more')).toBeInTheDocument()
     expect(screen.getByText('$199')).toBeInTheDocument()
   })
+
+  it('says so instead of a price when the hotel lists no rooms', () => {
+    render(
+      <MemoryRouter>
+        <HotelCard hotel={{ ...grand, rooms: [] }} fromPrice={undefined} />
+      </MemoryRouter>,
+    )
+    expect(screen.getByText('No rooms listed')).toBeInTheDocument()
+    expect(screen.queryByText(/per night/)).not.toBeInTheDocument()
+  })
 })

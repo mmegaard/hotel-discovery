@@ -117,3 +117,10 @@ slider, star prices and calendar, which TRADEOFFS.md marks as the first things t
 - **I decided:** no error boundary or retry UI (the brief does not ask for them; documented error states only);
   keep the fake today ungated so a demo build still books.
 - **I changed:** reviewed the PR before merge.
+
+## PR 12 — small production fixes
+
+- **AI produced:** `useDocumentTitle`, the `state.fromSearch` back link, the "No rooms listed" card state, and
+  three tests.
+- **I decided:** which of the review's findings were worth fixing before the interview.
+- **I changed:** reviewed the PR before merge.
