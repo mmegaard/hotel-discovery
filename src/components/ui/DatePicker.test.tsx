@@ -31,6 +31,38 @@ describe('DatePicker', () => {
     expect(onChange).toHaveBeenLastCalledWith({ from: '2026-07-10', to: undefined }, 'to')
   })
 
+  it('paints a lone check-in solid, and only the ends of a range', () => {
+    const { rerender } = render(
+      <DatePicker
+        value={{ from: '2026-07-10' }}
+        focus="to"
+        today="2026-07-09"
+        onChange={vi.fn()}
+        onDone={vi.fn()}
+        onClear={vi.fn()}
+      />,
+    )
+    const cell = (n: number) => day(n).parentElement!.className
+    const isMiddle = (n: number) => cell(n).split(' ').includes('range-mid')
+    expect(cell(10)).toContain('>button]:bg-accent ')
+    expect(isMiddle(10)).toBe(false)
+
+    rerender(
+      <DatePicker
+        value={{ from: '2026-07-10', to: '2026-07-12' }}
+        focus="to"
+        today="2026-07-09"
+        onChange={vi.fn()}
+        onDone={vi.fn()}
+        onClear={vi.fn()}
+      />,
+    )
+    expect(cell(10)).toContain('rounded-l-lg')
+    expect(isMiddle(11)).toBe(true)
+    expect(isMiddle(12)).toBe(false)
+    expect(cell(12)).toContain('rounded-r-lg')
+  })
+
   it('completes the range when focused on check-out, or restarts it when the day is not after check-in', async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()

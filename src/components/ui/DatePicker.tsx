@@ -40,12 +40,13 @@ const classNames = {
   day_button:
     'mx-auto flex h-11 w-11 items-center justify-center rounded-lg text-sm font-medium hover:bg-accent-tint disabled:cursor-not-allowed disabled:text-line-strong disabled:line-through disabled:hover:bg-transparent',
   today: '[&>button]:ring-2 [&>button]:ring-ink [&>button]:ring-inset',
-  selected: '',
-  range_start:
-    'rounded-l-lg bg-accent-tint [&>button]:bg-accent [&>button]:text-white [&>button]:hover:bg-accent-strong',
-  range_middle: 'bg-accent-tint [&>button]:rounded-none',
-  range_end:
-    'rounded-r-lg bg-accent-tint [&>button]:bg-accent [&>button]:text-white [&>button]:hover:bg-accent-strong',
+  // A lone check-in is only "selected" (range_start needs both ends), so the
+  // solid fill lives here; middle days opt out via the marker class.
+  selected:
+    '[&:not(.range-mid)>button]:bg-accent [&:not(.range-mid)>button]:text-white [&:not(.range-mid)>button]:hover:bg-accent-strong',
+  range_start: 'rounded-l-lg bg-accent-tint',
+  range_middle: 'range-mid bg-accent-tint [&>button]:rounded-none',
+  range_end: 'rounded-r-lg bg-accent-tint',
   outside: 'invisible',
   disabled: '',
   hidden: 'invisible',
