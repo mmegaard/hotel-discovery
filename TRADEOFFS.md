@@ -47,6 +47,11 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   (`GET /hotels`, `/hotels/:id`, `/hotels/:id/rooms`) with the brief's snake_case params and returns Promises.
   `api/hotelApi.ts` is the only import hooks use; it maps the UI's `HotelFilters` onto those params. Swapping in
   `fetch()` touches two files and nothing above them.
+- **Search responses are paged.** `GET /hotels` returns `{ hotels, total, page, page_size }`; the UI asks for page 1
+  with a page size of 50 and renders it. With the 40-hotel seed that is everything. A paging or infinite-scroll UI
+  is out of scope for the 3-hour framing, but the contract already carries what it needs.
+- **`useQuery` is the one effect that talks to the API.** Debounce, abort, refreshing status and the ignore flag
+  live there; `useHotels` and `useFilterOptions` are thin wrappers that pick a key and a call.
 - **Multi-star search in one request.** The brief's `star_rating` is a single value; the UI multi-selects. The mock
   accepts an array. A real backend would need either repeated `star_rating` params or one request per rating.
 - **Unknown hotel id resolves to `undefined`,** standing in for a 404, rather than throwing. Pages render "not found"
@@ -82,9 +87,11 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   tag is dropped here and "This hotel has no open dates" will appear only in the availability panel.
 - **Cards advertise the lowest in-range price.** `HotelList` computes it with `lowestPriceInRange` and passes a
   number to `HotelCard`, so the card stays a dumb renderer. With no price filter that is simply the cheapest room.
-- **"N of 40 hotels" hard-codes the total.** The dataset is fixed and the copy is from the design; deriving it
-  would mean a second query.
+- **"N of 40 hotels" reads both numbers from the API.** N is `total` on the search response (matches across all
+  pages); 40 is `total_hotels` from the facets response. Nothing about the dataset size is hard-coded.
 - **Amenities show three plus "+N more".** Per the design; the full list is on the detail page.
+- **The wireframe's "Prices are the lowest nightly rate in your range" line is dropped.** It was wireframe
+  annotation; the card's "from $X per night" already says it.
 - **Placeholder image is a crossed box.** The data has no images; a box keeps the card's shape honest.
 
 ## Filters and the city combobox
@@ -100,8 +107,7 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   the design's rules (city, country, or "City, Country") without the component knowing what a city is.
 - **Typing after a selection keeps the text and drops the filter,** per DESIGN.md. The input then reads
   "Seattle, USAx" with "No cities match" beneath; the list returns to all 40 hotels until a new option is picked.
-- **City options come from an unfiltered search.** The backend brief has no cities endpoint, so `useCityOptions`
-  derives them once from `GET /hotels`; a real API could swap in a dedicated call.
+- **City options come from the facets endpoint** (see "Star rating"), not from downloading every hotel.
 - **A city in the URL that is not in the catalogue** (`?city=Nowhere`) filters to zero and shows the empty state
   with a blank input, since there is no option to display. The URL is honoured rather than silently dropped.
 - **Two Reset buttons.** The panel's ghost "Reset filters" is always present; the empty state's primary one is
@@ -149,8 +155,10 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Nothing is disabled.** A rating with no matches (there are no 1-star hotels) reads "no matches" and stays
   clickable; pressing it alone yields the empty state with its Reset button. Disabled controls are easy to miss
   and read as broken to screen readers; a clear "no matches" plus an honest empty state is friendlier.
-- **One catalogue query feeds the filter bar.** `useCatalogue` (renamed from `useCityOptions`) loads all hotels
-  once; the page derives both city options and star prices from it during render.
+- **Filter options come from a facets endpoint, not the whole catalogue.** `GET /hotels/facets?city&min_price&max_price`
+  (mocked) returns every city, the lowest in-range price per rating, and the catalogue size. Downloading all
+  hotels to derive these would not survive real data volumes. `useFilterOptions` keys on city and price only, so
+  toggling stars never refetches.
 - **Fixed-size toggles with a 2px border in both states,** so pressing one never shifts its neighbours.
 
 ## UI states

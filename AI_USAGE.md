@@ -59,7 +59,9 @@ what I decided, and what I changed by hand, so the line between assistance and a
 
 ## PR 6 — search stars
 
-- **AI produced:** `StarToggle`, the star row in `FilterBar`, `useCatalogue`, the page test, and the star notes in
-  TRADEOFFS.md.
-- **I decided:** exact-match multi-select; prices computed against the other filters only; never disable a toggle.
+- **AI produced:** `StarToggle`, the star row in `FilterBar`, the facets endpoint and paged search in the mock,
+  the generic `useQuery` hook, `useFilterOptions`, tests, and the star and data-layer notes in TRADEOFFS.md.
+- **I decided:** exact-match multi-select; prices computed against the other filters only; never disable a toggle;
+  design for production volumes (no catalogue download, API-provided totals, paged contract) and put that rule in
+  the skill; drop the wireframe's price tagline.
 - **I changed:** reviewed the PR before merge.

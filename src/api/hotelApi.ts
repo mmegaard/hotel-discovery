@@ -1,5 +1,6 @@
 import type { IsoDate } from '../lib/dates'
 import type { Hotel, HotelFilters, Room } from '../types/hotel'
+import type { CityOption, StarOption } from './logic/filters'
 import * as mock from './mockHotelApi'
 
 // The one module hooks import. It speaks the UI's vocabulary (HotelFilters,
@@ -8,20 +9,56 @@ import * as mock from './mockHotelApi'
 
 export type { RequestOptions } from './mockHotelApi'
 
-/** Rejects with an AbortError when `options.signal` fires, like fetch(). */
-export function searchHotels(
+export interface HotelSearchResult {
+  hotels: Hotel[]
+  /** Matches across all pages. */
+  total: number
+}
+
+/** First page of hotels matching the filters. Rejects with an AbortError when
+ *  `options.signal` fires, like fetch(). */
+export async function searchHotels(
   filters: HotelFilters,
   options?: mock.RequestOptions,
-): Promise<Hotel[]> {
-  return mock.getHotels(
+): Promise<HotelSearchResult> {
+  const page = await mock.getHotels(
     {
       city: filters.city,
       star_rating: filters.stars,
       min_price: filters.minPrice,
       max_price: filters.maxPrice,
+      page: 1,
+      page_size: mock.DEFAULT_PAGE_SIZE,
     },
     options,
   )
+  return { hotels: page.hotels, total: page.total }
+}
+
+export interface FilterOptions {
+  cities: CityOption[]
+  stars: StarOption[]
+  totalHotels: number
+}
+
+/** What the filter bar shows: city options and per-rating prices under the
+ *  current city and price filters. The star selection does not affect it. */
+export async function getFilterOptions(
+  filters: HotelFilters,
+  options?: mock.RequestOptions,
+): Promise<FilterOptions> {
+  const facets = await mock.getHotelFacets(
+    { city: filters.city, min_price: filters.minPrice, max_price: filters.maxPrice },
+    options,
+  )
+  return {
+    cities: facets.cities,
+    stars: facets.star_prices.map((s) => ({
+      stars: s.star_rating,
+      fromPrice: s.from_price ?? undefined,
+    })),
+    totalHotels: facets.total_hotels,
+  }
 }
 
 export function getHotel(id: string): Promise<Hotel | undefined> {
