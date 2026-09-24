@@ -21,3 +21,12 @@ what I decided, and what I changed by hand, so the line between assistance and a
 - **I decided:** data-router mode without loaders; `/` redirects to `/hotels`; the wireframe's URL strip stays out
   of the app; unknown hotel ids are a page concern, not a router concern.
 - **I changed:** reviewed the PR before merge.
+
+## PR 2 — api layer
+
+- **AI produced:** the date and format helpers, the pure filter and availability rules, the mock API and
+  `hotelApi.ts` entry point, 25 unit tests, and the data-layer section of TRADEOFFS.md.
+- **I decided:** the layering (UI filters → api module → backend-shaped mock → pure logic); any-room price
+  matching; `[checkIn, checkOut)` night semantics; ISO-string dates with no date library; `undefined` for a
+  missing hotel instead of an exception.
+- **I changed:** reviewed the PR before merge.
