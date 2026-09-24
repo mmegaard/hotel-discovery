@@ -124,3 +124,10 @@ slider, star prices and calendar, which TRADEOFFS.md marks as the first things t
   three tests.
 - **I decided:** which of the review's findings were worth fixing before the interview.
 - **I changed:** reviewed the PR before merge.
+
+## PR 13 — no layout jumps on load
+
+- **AI produced:** the lazy-loaded calendar with a same-height fallback, star-row placeholders while filter
+  options load, the empty state kept during a refresh, and the tests.
+- **I decided:** the star row must never grow on load (I spotted the jump); keep the no-jumps rule absolute.
+- **I changed:** reviewed the PR before merge.
