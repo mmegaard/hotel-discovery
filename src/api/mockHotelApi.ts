@@ -103,8 +103,11 @@ export async function getHotelFacets(
 }
 
 /** GET /hotels/:id — undefined stands in for a 404. */
-export async function getHotelById(id: string): Promise<Hotel | undefined> {
-  await delay()
+export async function getHotelById(
+  id: string,
+  options: RequestOptions = {},
+): Promise<Hotel | undefined> {
+  await delay(options.signal)
   return hotels.find((h) => h.id === id)
 }
 

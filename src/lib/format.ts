@@ -1,3 +1,5 @@
+import type { Address } from '../types/hotel'
+
 const usd = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -19,4 +21,9 @@ export function humanizeAmenity(key: string): string {
 /** plural(1, "night") -> "1 night"; plural(3, "night") -> "3 nights" */
 export function plural(count: number, noun: string, pluralNoun = `${noun}s`): string {
   return `${count} ${count === 1 ? noun : pluralNoun}`
+}
+
+/** "789 Skyline Blvd, Chicago, IL 60611, USA" */
+export function formatAddress({ street, city, state, zip_code, country }: Address): string {
+  return `${street}, ${city}, ${state} ${zip_code}, ${country}`
 }
