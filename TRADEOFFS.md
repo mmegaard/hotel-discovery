@@ -139,6 +139,20 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   never collapses the page into skeletons. Every step still hits the mock; no debounce, because a 40-hotel
   in-memory query is cheaper than the added latency and code.
 
+## Star rating
+
+- **Five toggles, multi-select, exact match.** `aria-pressed` buttons from 5 down to 1; any combination; an empty
+  selection means all ratings. Selected ratings serialize as `stars=5,4`.
+- **Each toggle shows "from $X" under the current city and price filters** with the star selection itself ignored,
+  so a pressed toggle never hides the price that would justify pressing another. Computed by `starOptions` in
+  the pure logic layer over the unfiltered catalogue.
+- **Nothing is disabled.** A rating with no matches (there are no 1-star hotels) reads "no matches" and stays
+  clickable; pressing it alone yields the empty state with its Reset button. Disabled controls are easy to miss
+  and read as broken to screen readers; a clear "no matches" plus an honest empty state is friendlier.
+- **One catalogue query feeds the filter bar.** `useCatalogue` (renamed from `useCityOptions`) loads all hotels
+  once; the page derives both city options and star prices from it during render.
+- **Fixed-size toggles with a 2px border in both states,** so pressing one never shifts its neighbours.
+
 ## UI states
 
 Documented here as they are built.

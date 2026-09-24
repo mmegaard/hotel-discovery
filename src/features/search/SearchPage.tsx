@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
-import { useCityOptions } from '../../hooks/useCityOptions'
+import { cityOptions, starOptions } from '../../api/logic/filters'
+import { useCatalogue } from '../../hooks/useCatalogue'
 import { useHotelFilters } from '../../hooks/useHotelFilters'
 import { useHotels } from '../../hooks/useHotels'
 import { FilterBar } from './FilterBar'
@@ -11,7 +12,7 @@ const TOTAL_HOTELS = 40
 
 export function SearchPage() {
   const { filters, updateFilters, reset: resetFilters } = useHotelFilters()
-  const cityOptions = useCityOptions()
+  const catalogue = useCatalogue()
   const { hotels, status } = useHotels(filters)
   // Text typed into the city box before an option is chosen. Lives here, not
   // in FilterBar, so both Reset buttons clear it together with the URL.
@@ -30,7 +31,8 @@ export function SearchPage() {
 
       <FilterBar
         filters={filters}
-        cityOptions={cityOptions}
+        cityOptions={cityOptions(catalogue)}
+        starOptions={starOptions(catalogue, filters)}
         cityDraft={cityDraft}
         onCityDraftChange={setCityDraft}
         onChange={updateFilters}
