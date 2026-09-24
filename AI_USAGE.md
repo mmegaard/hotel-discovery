@@ -137,3 +137,9 @@ slider, star prices and calendar, which TRADEOFFS.md marks as the first things t
 - **AI produced:** the GitHub Actions workflow.
 - **I decided:** run the same four checks as the local definition of done, plus a format check.
 - **I changed:** reviewed the PR before merge.
+
+## PR 15 — prefilled availability dates
+
+- **AI produced:** the prefilled one-night stay and the test changes.
+- **I decided:** the panel should answer on load with today → tomorrow rather than wait for input.
+- **I changed:** reviewed the PR before merge.

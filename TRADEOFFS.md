@@ -256,6 +256,11 @@ A final pass against "lightweight, production-ready", after all features landed.
   blank for the duration of the refresh.
 - **CI runs the definition of done on every push and pull request** (`.github/workflows/ci.yml`): typecheck,
   lint, format check, tests, build, on Node 22.
+- **Availability is prefilled to a one-night stay from today.** The panel answers on load instead of waiting for
+  input; with the demo clock that is July 9 → 10, which for most hotels shows the "no rooms" state with the
+  "Try Jul 10–12" hint, so the user sees at once which dates to pick. Clearing either box returns to the idle hint.
+- **Still deliberately not done:** self-hosted fonts (Google Fonts is one request and FOUT is acceptable for a
+  take-home), a full mobile layout, and the items under "Out of scope".
 
 ## UI states
 
@@ -269,8 +274,9 @@ Documented here as they are built.
 - **Hotel not found** (`/hotels/hotel-99`, `role="status"`): dashed panel, "Hotel not found", one line, "Browse
   all hotels" button link. The back link still works.
 - **Loading** (detail page): skeleton of the header and amenity boxes.
-- **Availability idle** (detail panel): "Choose your dates to see which rooms are open. This hotel offers N
-  room types." in a tinted box.
+- **Availability idle** (detail panel, after clearing a date): "Choose your dates to see which rooms are open.
+  This hotel offers N room types." in a tinted box. On load the panel is prefilled with today → tomorrow and
+  shows a result instead.
 - **Invalid date range** (`role="alert"`): "Check-out must be after check-in." with an icon, replacing results.
 - **Checking availability** (detail panel): one line plus one skeleton per room type.
 - **No rooms available** (`role="status"`, compact): "No rooms available for these dates" and "Try Jul 10–12."
