@@ -35,6 +35,15 @@ Use the Tailwind theme tokens (accent, ink, muted, line, page, panel) — never 
 44px minimum targets, visible 3px focus ring, `aria-pressed` for toggles, `role="alert"` for validation, `aria-live="polite"`
 for counts. States never differ by hue alone.
 
+## No layout jumps
+
+Every async or conditional state reserves the space its content will take, so nothing on screen moves when data
+arrives or a state flips. Loading renders skeletons with the exact box of the real content (see `HotelCardSkeleton`),
+never a spinner or an empty gap. Validation messages, counts, and empty states occupy a slot that exists in every
+state (fixed height or a placeholder line), not one that appears on demand. Images and placeholders have explicit
+dimensions. Toggles and inputs keep the same size when pressed, focused, or disabled. If a state must change height,
+it does so below everything the user is looking at, never above it.
+
 ## Files, tests
 
 PascalCase components, camelCase otherwise, colocated tests. Pure logic: unit tests per rule in TRADEOFFS.md. Pages: one
