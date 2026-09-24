@@ -32,8 +32,8 @@ export function SearchPage() {
 
       <FilterBar
         filters={filters}
-        cityOptions={options.cities}
-        starOptions={options.stars}
+        cityOptions={options?.cities ?? []}
+        starOptions={options?.stars}
         cityDraft={cityDraft}
         onCityDraftChange={setCityDraft}
         onChange={updateFilters}
@@ -41,7 +41,7 @@ export function SearchPage() {
       />
 
       <p aria-live="polite" className="text-[15px]">
-        {status === 'loading' ? (
+        {status === 'loading' || options === undefined ? (
           'Loading hotels…'
         ) : status === 'error' ? (
           'Couldn’t load hotels. Check your connection and try again.'

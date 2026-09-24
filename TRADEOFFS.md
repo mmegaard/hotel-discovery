@@ -160,6 +160,9 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   hotels to derive these would not survive real data volumes. `useFilterOptions` keys on city and price only, so
   toggling stars never refetches.
 - **Fixed-size toggles with a 2px border in both states,** so pressing one never shifts its neighbours.
+- **Five toggle-sized placeholders until the facets answer.** The row used to render nothing and then grow;
+  now `useFilterOptions` returns undefined until the first answer and `FilterBar` fills the row with
+  placeholders of the toggles' exact box, so the filter panel's height is final from the first paint.
 
 ## Hotel detail
 

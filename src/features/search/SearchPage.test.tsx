@@ -19,6 +19,10 @@ describe('SearchPage', () => {
     const results = screen.getByRole('region', { name: 'Results' })
     expect(results).toHaveAttribute('aria-busy', 'true')
     expect(screen.getByText('Loading hotels…')).toBeInTheDocument()
+    // The star row keeps its height while the options load: five placeholders, no buttons yet.
+    const starRow = screen.getByRole('group', { name: 'Star rating' })
+    expect(starRow.querySelectorAll('[aria-hidden="true"]')).toHaveLength(5)
+    expect(within(starRow).queryAllByRole('button')).toHaveLength(0)
 
     await waitFor(() => expect(count()).toHaveTextContent(/^40 of 40 hotels$/))
     expect(cards()).toHaveLength(40)
