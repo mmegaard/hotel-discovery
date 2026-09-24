@@ -26,9 +26,28 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Desktop-only layout (1280px).** The design handoff covers desktop only; a mobile layout is out of scope for the
   3-hour framing and is the first thing to add afterwards.
 
+## Routing and URL design
+
+- **React Router v7 (`react-router` package) in data-router mode, no loaders.** `createBrowserRouter` over a plain
+  route table exported from `src/routes.tsx`; tests bind the same table to `createMemoryRouter`, so route
+  behaviour is tested without touching `window.location`. Loaders are skipped because data comes from a
+  synchronous in-memory seed; page-level hooks keep the layering simpler to read.
+- **URL owns page identity and filters:** `/hotels?city=…&stars=…&minPrice=…&maxPrice=…` and `/hotels/:id`.
+  `/` redirects to `/hotels` so there is one canonical search URL. Unknown paths render the 404 page with a
+  "Search hotels" link; an unknown hotel id is handled by the detail page, not the router, because the route
+  is valid and only the data is missing.
+- **No in-app URL strip.** The wireframes show a mono "URL /hotels…" bar under the header; that is a wireframe
+  annotation for reviewers. The browser's address bar already shows the route, so the app renders only the header.
+- **Layout:** one `AppLayout` with the StayFinder header and an `<Outlet />`. No navigation links yet; the header
+  is a brand mark until a feature needs more.
+
 ## UI states
 
-Documented here as they are built. Target list: no hotels match; availability idle; invalid date range; no rooms
+Documented here as they are built.
+
+- **404** (`/anything`): mono "404", "Page not found", one-line explanation, "Search hotels" button link.
+
+Still to build: no hotels match; availability idle; invalid date range; no rooms
 available; hotel has no open dates; hotel not found; 404; one-line loading.
 
 ## Out of scope
