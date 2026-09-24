@@ -2,6 +2,7 @@ import { lowestPriceInRange } from '../../api/logic/filters'
 import type { Hotel, HotelFilters } from '../../types/hotel'
 import { HotelCard } from './HotelCard'
 import { HotelCardSkeleton } from './HotelCardSkeleton'
+import type { QueryStatus } from '../../hooks/useQuery'
 
 export interface HotelListProps {
   hotels: Hotel[]
@@ -9,7 +10,7 @@ export interface HotelListProps {
   filters: HotelFilters
   /** loading: skeleton cards. refreshing: the current cards, dimmed, so the
    *  list never collapses while a filter change is answered. */
-  status?: 'loading' | 'refreshing' | 'success'
+  status?: QueryStatus
   placeholderCount?: number
 }
 

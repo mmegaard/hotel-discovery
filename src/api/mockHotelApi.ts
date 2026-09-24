@@ -117,7 +117,9 @@ export async function getHotelRooms(
   id: string,
   check_in: IsoDate,
   check_out: IsoDate,
+  options: RequestOptions = {},
 ): Promise<Room[] | undefined> {
-  const hotel = await getHotelById(id)
+  await delay(options.signal)
+  const hotel = hotels.find((h) => h.id === id)
   return hotel && roomsAvailableFor(hotel, check_in, check_out).open
 }

@@ -19,6 +19,20 @@ afterEach(() => {
 })
 
 describe('useQuery', () => {
+  it('stays idle and fetches nothing while disabled, then loads once enabled', async () => {
+    const spy = vi.fn(fetch)
+    const { result, rerender } = renderHook((enabled: boolean) => useQuery('a', spy, { enabled }), {
+      initialProps: false,
+    })
+    expect(result.current).toEqual({ data: undefined, status: 'idle' })
+    expect(spy).not.toHaveBeenCalled()
+
+    rerender(true)
+    expect(result.current.status).toBe('loading')
+    await act(async () => answer.shift()!('A'))
+    expect(result.current).toEqual({ data: 'A', status: 'success' })
+  })
+
   it('shows loading first, then keeps the previous answer while a key change is refreshing', async () => {
     const { result, rerender } = renderHook((key: string) => useQuery(key, fetch), {
       initialProps: 'a',
