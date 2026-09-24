@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button'
 import { Combobox } from '../../components/ui/Combobox'
 import { plural } from '../../lib/format'
 import type { HotelFilters } from '../../types/hotel'
+import { PriceRange } from './PriceRange'
 
 export interface FilterBarProps {
   filters: HotelFilters
@@ -45,6 +46,7 @@ export function FilterBar({
           onSelect={(city) => onChange({ city })}
           emptyMessage={(q) => `No cities match "${q}"`}
         />
+        <PriceRange minPrice={filters.minPrice} maxPrice={filters.maxPrice} onChange={onChange} />
         <Button variant="ghost" onClick={onReset} className="mt-6 ml-auto px-4 text-sm">
           Reset filters
         </Button>

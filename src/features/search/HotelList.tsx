@@ -7,20 +7,25 @@ export interface HotelListProps {
   hotels: Hotel[]
   /** Used only to pick which room price each card advertises. */
   filters: HotelFilters
-  /** While true, renders `placeholderCount` skeleton cards instead of hotels. */
-  loading?: boolean
+  /** loading: skeleton cards. refreshing: the current cards, dimmed, so the
+   *  list never collapses while a filter change is answered. */
+  status?: 'loading' | 'refreshing' | 'success'
   placeholderCount?: number
 }
 
 export function HotelList({
   hotels,
   filters,
-  loading = false,
+  status = 'success',
   placeholderCount = 6,
 }: HotelListProps) {
   return (
-    <section aria-label="Results" aria-busy={loading} className="flex flex-col gap-3 pb-10">
-      {loading
+    <section
+      aria-label="Results"
+      aria-busy={status !== 'success'}
+      className={`flex flex-col gap-3 pb-10 transition-opacity ${status === 'refreshing' ? 'opacity-60' : ''}`}
+    >
+      {status === 'loading'
         ? Array.from({ length: placeholderCount }, (_, i) => <HotelCardSkeleton key={i} />)
         : hotels.map((hotel) => (
             <HotelCard

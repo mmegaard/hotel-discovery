@@ -47,3 +47,11 @@ what I decided, and what I changed by hand, so the line between assistance and a
 - **I decided:** URL as the only filter store with `replace` navigation; the typed city text owned by the page so
   both Reset buttons clear it; generic prefix matching in the combobox; honouring an unknown city in the URL.
 - **I changed:** reviewed the PR before merge.
+
+## PR 5 — search price
+
+- **AI produced:** `ui/NumberInput`, `ui/RangeSlider`, `PriceRange`, the `refreshing` status in `useHotels`,
+  six tests, and the price notes in TRADEOFFS.md.
+- **I decided:** native range inputs over a library; commit-on-blur for typed values; keep stale results while
+  refreshing rather than flashing skeletons; no debounce.
+- **I changed:** reviewed the PR before merge.

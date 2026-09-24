@@ -109,6 +109,23 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Layout:** the dropdown overlays the results instead of pushing them, and the empty state takes the results
   slot while the count line and filter panel stay put, so nothing above the user's focus moves.
 
+## Price range
+
+- **Bounds $50–$600 in $5 steps,** from the design; the data spans $75–$590 so both ends have slack. The rule
+  stays "a hotel matches when ANY room is in range" and cards show the lowest in-range price.
+- **Two native `<input type="range">` stacked on one track** instead of a slider library: keyboard, screen-reader
+  and touch support come free, and the only trick is `pointer-events: none` on the inputs with `auto` on the
+  thumbs. Thumb styling uses Tailwind's pseudo-element variants inline, so no CSS file is touched.
+- **Number inputs commit on blur or Enter, not per keystroke.** Clamping while typing would turn "1" into "50"
+  before the user reaches "100". The slider commits continuously because each step is already a valid value.
+- **Handles cannot cross:** the slider keeps min ≤ max − $5; the inputs clamp min up to max and max down to min.
+- **Values at the bounds are written as `undefined`,** so an untouched slider leaves the URL clean and does not
+  trigger a refetch with a different key.
+- **Stale results stay visible while a filter change is answered.** `useHotels` now distinguishes `loading`
+  (nothing yet, skeletons) from `refreshing` (previous list dimmed with `aria-busy`), so dragging the slider
+  never collapses the page into skeletons. Every step still hits the mock; no debounce, because a 40-hotel
+  in-memory query is cheaper than the added latency and code.
+
 ## UI states
 
 Documented here as they are built.
@@ -116,6 +133,7 @@ Documented here as they are built.
 - **404** (`/anything`): mono "404", "Page not found", one-line explanation, "Search hotels" button link.
 
 - **Loading** (search page): "Loading hotels…" in the `aria-live` count region plus six skeleton cards.
+- **Refreshing** (search page): previous cards stay, dimmed to 60%, `aria-busy` on the results region.
 - **No hotels match** (search page, `role="status"`): dashed panel, "No hotels match these filters", hint, primary
   Reset filters button. The count line reads "0 of 40 hotels".
 - **No cities match** (combobox): one line inside the list, `No cities match "…"`; the input keeps its text.
