@@ -254,6 +254,8 @@ A final pass against "lightweight, production-ready", after all features landed.
   main bundle drops from 136 KB to 116 KB gzipped, and the search page never pays for the calendar.
 - **The empty state stays up while a change to an empty result is answered,** instead of the results slot going
   blank for the duration of the refresh.
+- **CI runs the definition of done on every push and pull request** (`.github/workflows/ci.yml`): typecheck,
+  lint, format check, tests, build, on Node 22.
 
 ## UI states
 
