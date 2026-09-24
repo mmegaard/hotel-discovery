@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hotel details</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#1b1f23;background:#f4f4f1}
+a{color:#1f5fbf}a:hover{color:#16478f}
+*:focus-visible{outline:3px solid #1f5fbf;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 1280px; height: 1180px; box-sizing: border-box; display: flex; flex-direction: column; background: #f4f4f1; overflow: hidden">
+
+  <header style="height: 64px; flex-shrink: 0; box-sizing: border-box; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; background: #ffffff; border-bottom: 1px solid #d5d7da">
+    <div style="font-weight: 600; font-size: 18px; letter-spacing: -0.01em">StayFinder</div>
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #545b63">wireframe v1</div>
+  </header>
+  <div style="height: 36px; flex-shrink: 0; box-sizing: border-box; padding: 0 40px; display: flex; align-items: center; gap: 10px; background: #e9e9e5; border-bottom: 1px solid #d5d7da; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #3a4047">
+    <span style="color: #545b63">URL</span><span>/hotels/{{hotelId}}</span>
+  </div>
+
+  <main style="flex-grow: 1; box-sizing: border-box; padding: 24px 40px 40px; display: flex; flex-direction: column; gap: 20px">
+    <a href="Main.dc.html" style="align-self: flex-start; display: flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+      Back to results
+    </a>
+
+    <sc-if value="{{notFound}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="position: relative; margin-top: 40px; padding: 72px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; background: #ffffff; border: 1px dashed #8a9199; border-radius: 12px; outline: {{lblOutline}}; outline-offset: 4px">
+        <sc-if value="{{labels}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -12px; left: 16px; padding: 2px 8px; background: #a3470f; color: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border-radius: 4px">ui/EmptyState</span></sc-if>
+        <h1 style="margin: 0; font-size: 24px; font-weight: 600">Hotel not found</h1>
+        <p style="margin: 0; font-size: 15px; color: #545b63">This link may be out of date, or the hotel is no longer listed.</p>
+        <a href="Main.dc.html" style="margin-top: 8px; display: flex; align-items: center; height: 44px; padding: 0 20px; font-size: 15px; font-weight: 500; color: #ffffff; background: #1f5fbf; border-radius: 8px; text-decoration: none">Browse all hotels</a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{found}}" hint-placeholder-val="{{ true }}">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 440px; gap: 32px; align-items: start">
+
+        <div style="display: flex; flex-direction: column; gap: 24px">
+          <section aria-labelledby="hname" style="position: relative; display: flex; flex-direction: column; gap: 14px; outline: {{lblOutline}}; outline-offset: 6px">
+            <sc-if value="{{labels}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -14px; right: 0; padding: 2px 8px; background: #a3470f; color: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border-radius: 4px">HotelHeader</span></sc-if>
+            <div aria-hidden="true" style="height: 260px; background: #e9e9e5; border-radius: 12px; overflow: hidden">
+              <svg width="100%" height="260" viewBox="0 0 760 260" preserveAspectRatio="none" fill="none" stroke="#c4c7cb" stroke-width="1"><path d="M0 0L760 260M760 0L0 260"></path></svg>
+            </div>
+            <div style="display: flex; justify-content: space-between; gap: 24px; align-items: flex-start">
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <h1 id="hname" style="margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -0.01em">{{h.name}}</h1>
+                <div style="display: flex; gap: 12px; align-items: center; font-size: 15px; color: #3a4047">
+                  <span aria-label="{{h.starsAria}}"><span aria-hidden="true" style="letter-spacing: 1px">{{h.starGlyphs}}</span></span>
+                  <span aria-hidden="true" style="color: #8a9199">·</span>
+                  <span>{{h.address}}</span>
+                </div>
+              </div>
+              <div style="flex-shrink: 0; display: flex; align-items: center; gap: 10px">
+                <span style="padding: 6px 10px; font-size: 18px; font-weight: 600; background: #e8f0fb; color: #16478f; border-radius: 8px">{{h.rating}}</span>
+                <span style="font-size: 14px; color: #545b63; line-height: 1.3">out of 5<br>{{h.reviews}} reviews</span>
+              </div>
+            </div>
+            <p style="margin: 0; font-size: 16px; line-height: 1.6; max-width: 68ch">{{h.description}}</p>
+            <dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 16px; background: #ffffff; border: 1px solid #d5d7da; border-radius: 12px; font-size: 14px">
+              <div><dt style="color: #545b63">Check-in / out</dt><dd style="margin: 4px 0 0">{{h.checkIn}} / {{h.checkOut}}</dd></div>
+              <div><dt style="color: #545b63">Cancellation</dt><dd style="margin: 4px 0 0">{{h.cancellation}}</dd></div>
+              <div><dt style="color: #545b63">Contact</dt><dd style="margin: 4px 0 0">{{h.phone}}<br><a href="mailto:{{h.email}}">{{h.email}}</a></dd></div>
+            </dl>
+          </section>
+
+          <section aria-labelledby="amen" style="position: relative; display: flex; flex-direction: column; gap: 12px; outline: {{lblOutline}}; outline-offset: 6px">
+            <sc-if value="{{labels}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -14px; right: 0; padding: 2px 8px; background: #a3470f; color: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border-radius: 4px">AmenityList</span></sc-if>
+            <h2 id="amen" style="margin: 0; font-size: 20px; font-weight: 600">Amenities</h2>
+            <ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 24px; font-size: 15px">
+              <sc-for list="{{h.amenities}}" as="a" hint-placeholder-count="6">
+                <li style="display: flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1f5fbf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"></path></svg>{{a}}</li>
+              </sc-for>
+            </ul>
+          </section>
+        </div>
+
+        <section aria-labelledby="avail" style="position: relative; box-sizing: border-box; padding: 24px; display: flex; flex-direction: column; gap: 16px; background: #ffffff; border: 1px solid #d5d7da; border-radius: 12px; outline: {{lblOutline}}; outline-offset: 4px">
+          <sc-if value="{{labels}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -12px; left: 16px; padding: 2px 8px; background: #a3470f; color: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 11px; border-radius: 4px">RoomAvailability</span></sc-if>
+          <h2 id="avail" style="margin: 0; font-size: 20px; font-weight: 600">Check room availability</h2>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <label for="cin" style="font-size: 13px; font-weight: 500">Check-in</label>
+              <input id="cin" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" autocomplete="off" value="{{inText}}" onChange="{{onInType}}" onFocus="{{openIn}}" aria-describedby="window" aria-expanded="{{pickIn}}" aria-haspopup="dialog" style="height: 44px; box-sizing: border-box; padding: 0 12px; font: inherit; font-size: 15px; color: #1b1f23; border-radius: 8px; background: #ffffff; border: {{inBorder}}">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <label for="cout" style="font-size: 13px; font-weight: 500">Check-out</label>
+              <input id="cout" type="text" inputmode="numeric" placeholder="MM/DD/YYYY" autocomplete="off" value="{{outText}}" onChange="{{onOutType}}" onFocus="{{openOut}}" aria-describedby="window" aria-expanded="{{pickOut}}" aria-haspopup="dialog" style="height: 44px; box-sizing: border-box; padding: 0 12px; font: inherit; font-size: 15px; color: #1b1f23; border-radius: 8px; background: #ffffff; border: {{outBorder}}">
+            </div>
+          </div>
+          <p id="window" style="margin: -4px 0 0; font-size: 13px; color: #545b63">{{windowHint}}</p>
+
+          <sc-if value="{{pickerOpen}}" hint-placeholder-val="{{ false }}">
+            <div role="dialog" aria-label="{{pickerTitle}}" style="position: relative; box-sizing: border-box; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #ffffff; border: 1px solid #8a9199; border-radius: 12px; box-shadow: 0 8px 24px rgba(27,31,35,0.12)">
+              <sc-if value="{{labels}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -10px; right: 12px; padding: 1px 6px; background: #a3470f; color: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 10px; border-radius: 4px">ui/DatePicker</span></sc-if>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+                <button type="button" aria-label="Previous month" onClick="{{prevMonth}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid #d5d7da; border-radius: 8px; color: #1b1f23; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px">
+                  <span aria-live="polite" style="font-size: 16px; font-weight: 600">{{monthLabel}}</span>
+                  <span style="font-size: 12px; color: #545b63">{{pickerPrompt}}</span>
+                </div>
+                <button type="button" aria-label="Next month" onClick="{{nextMonth}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid #d5d7da; border-radius: 8px; color: #1b1f23; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+              </div>
+              <div role="grid" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+                <sc-for list="{{dow}}" as="d" hint-placeholder-count="7"><div role="columnheader" style="padding: 4px 0; text-align: center; font-size: 12px; font-weight: 500; color: #545b63">{{d}}</div></sc-for>
+                <sc-for list="{{days}}" as="d" hint-placeholder-count="35">
+                  <button type="button" role="gridcell" aria-label="{{d.aria}}" aria-pressed="{{d.pressed}}" aria-disabled="{{d.past}}" onClick="{{d.pick}}" style="height: 48px; box-sizing: border-box; padding: 4px 0 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font: inherit; line-height: 1; border-radius: 8px; cursor: {{d.cursor}}; background: {{d.bg}}; color: {{d.fg}}; border: {{d.border}}; text-decoration: {{d.deco}}; visibility: {{d.vis}}">
+                    <span style="font-size: 14px; font-weight: 500">{{d.num}}</span>
+                    <span style="font-size: 10px; font-weight: 400">{{d.sub}}</span>
+                  </button>
+                </sc-for>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 8px; border-top: 1px solid #d5d7da">
+                <button type="button" onClick="{{goToday}}" style="height: 44px; padding: 0 12px; display: flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; font-weight: 500; color: #1f5fbf; background: transparent; border: 0; border-radius: 8px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path><circle cx="12" cy="15" r="1.5" fill="currentColor"></circle></svg>Today</button>
+                <div style="display: flex; gap: 8px">
+                  <button type="button" onClick="{{clearDates}}" style="height: 44px; padding: 0 12px; font: inherit; font-size: 14px; font-weight: 500; color: #1b1f23; background: transparent; border: 1px solid #d5d7da; border-radius: 8px; cursor: pointer">Clear</button>
+                  <button type="button" onClick="{{closePicker}}" style="height: 44px; padding: 0 16px; font: inherit; font-size: 14px; font-weight: 500; color: #ffffff; background: #1f5fbf; border: 0; border-radius: 8px; cursor: pointer">Done</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <div aria-live="polite" style="display: flex; flex-direction: column; gap: 12px">
+            <sc-if value="{{vIdle}}" hint-placeholder-val="{{ true }}">
+              <p style="margin: 0; padding: 16px; font-size: 14px; color: #3a4047; background: #f4f4f1; border-radius: 8px">Choose your dates to see which rooms are open. This hotel offers {{roomCount}}.</p>
+            </sc-if>
+            <sc-if value="{{vInvalid}}" hint-placeholder-val="{{ false }}">
+              <p role="alert" style="margin: 0; padding: 12px 16px; display: flex; gap: 8px; align-items: center; font-size: 14px; border: 1px solid #1b1f23; border-radius: 8px">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 17h.01"></path></svg>
+                Check-out must be after check-in.
+              </p>
+            </sc-if>
+            <sc-if value="{{vResults}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-size: 14px; color: #3a4047"><strong>{{openCount}}</strong> for {{nightsLabel}} · {{rangeLabel}}</p>
+            </sc-if>
+            <sc-for list="{{open}}" as="r" hint-placeholder-count="2">
+              <article style="position: relative; padding: 16px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #8a9199; border-radius: 10px">
+                <sc-if value="{{labels}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -10px; right: 12px; padding: 1px 6px; background: #a3470f; color: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 10px; border-radius: 4px">RoomCard</span></sc-if>
+                <div style="display: flex; justify-content: space-between; gap: 12px; align-items: baseline">
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 600">{{r.type}}</h3>
+                  <div style="text-align: right; flex-shrink: 0"><span style="font-size: 18px; font-weight: 600">${{r.price}}</span><span style="font-size: 13px; color: #545b63"> / night</span></div>
+                </div>
+                <div style="font-size: 13px; color: #3a4047">{{r.specs}}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px">
+                  <span style="color: #545b63">{{r.amen}}</span>
+                  <span style="flex-shrink: 0; font-weight: 500">${{r.total}} total</span>
+                </div>
+              </article>
+            </sc-for>
+            <sc-if value="{{vEmpty}}" hint-placeholder-val="{{ false }}">
+              <div role="status" style="position: relative; padding: 28px 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; border: 1px dashed #8a9199; border-radius: 10px">
+                <sc-if value="{{labels}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: -10px; left: 12px; padding: 1px 6px; background: #a3470f; color: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 10px; border-radius: 4px">ui/EmptyState</span></sc-if>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#545b63" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4M10 14l4 4M14 14l-4 4"></path></svg>
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600">No rooms available for these dates</h3>
+                <p style="margin: 0; font-size: 14px; color: #545b63">{{emptyHint}}</p>
+              </div>
+            </sc-if>
+            <sc-if value="{{hasClosed}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-size: 13px; color: #545b63">Not open for these dates: {{closedList}}</p>
+            </sc-if>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;hotelId&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;hotel-01&quot;,&quot;options&quot;:[&quot;hotel-01&quot;,&quot;hotel-05&quot;,&quot;hotel-07&quot;,&quot;hotel-04&quot;,&quot;hotel-99&quot;],&quot;section&quot;:&quot;Wireframe&quot;},&quot;today&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;2026-07-10&quot;,&quot;options&quot;:[&quot;2026-07-10&quot;,&quot;2026-07-12&quot;,&quot;2026-09-24&quot;],&quot;section&quot;:&quot;Wireframe&quot;},&quot;showLabels&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Wireframe&quot;},&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1180}}">
+var HOTELS = /* see ../hotels.json */ null;
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function monthOf(iso){ return iso.slice(0,7); }
+function shiftMonth(ym, n){ var y = +ym.slice(0,4), m = +ym.slice(5,7) - 1 + n; y += Math.floor(m / 12); m = ((m % 12) + 12) % 12; return y + '-' + String(m + 1).padStart(2,'0'); }
+function toText(iso){ return iso ? iso.slice(5,7) + '/' + iso.slice(8,10) + '/' + iso.slice(0,4) : ''; }
+function parseText(s){ var m = /^\s*(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})\s*$/.exec(s); if (!m) return null; var iso = m[3] + '-' + m[1].padStart(2,'0') + '-' + m[2].padStart(2,'0'); return isNaN(new Date(iso + 'T00:00:00Z').getTime()) ? null : iso; }
+function titleCase(s){ s = s.replace(/_/g,' '); return s.charAt(0).toUpperCase() + s.slice(1); }
+function addDays(iso, n){ var d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); }
+function fmt(iso){ return new Date(iso + 'T00:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+function nightsBetween(a, b){ var out = []; for (var d = a; d < b; d = addDays(d, 1)) out.push(d); return out; }
+function plural(n, one, many){ return n + ' ' + (n === 1 ? one : many); }
+function spans(dates){
+  if (!dates.length) return '';
+  var s = dates.slice().sort(), groups = [], start = s[0], prev = s[0];
+  for (var i = 1; i <= s.length; i++) {
+    if (i < s.length && s[i] === addDays(prev, 1)) { prev = s[i]; continue; }
+    groups.push(start === prev ? fmt(start) : fmt(start) + ' to ' + fmt(addDays(prev, 1)));
+    if (i < s.length) { start = s[i]; prev = s[i]; }
+  }
+  return groups.join(', ');
+}
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { checkIn: '', checkOut: '', picker: '', month: '' }; }
+  renderVals() {
+    var st = this.state, self = this;
+    var labels = !!this.props.showLabels;
+    var id = this.props.hotelId ?? 'hotel-01';
+    var TODAY = this.props.today ?? '2026-07-10';
+    var raw = HOTELS[id];
+    var base = { labels: labels, lblOutline: labels ? '2px dashed #a3470f' : 'none', hotelId: id, notFound: !raw, found: !!raw };
+    if (!raw) return base;
+    var allOpen = []; raw.rooms.forEach(function(r){ r.available_dates.forEach(function(d){ if (allOpen.indexOf(d) < 0) allOpen.push(d); }); });
+    var h = {
+      name: raw.name, description: raw.description,
+      starGlyphs: '★'.repeat(raw.star_rating) + '☆'.repeat(5 - raw.star_rating), starsAria: raw.star_rating + '-star hotel',
+      address: raw.address.street + ', ' + raw.address.city + (raw.address.state ? ', ' + raw.address.state : '') + ' ' + raw.address.zip_code,
+      rating: raw.overall_rating.toFixed(1), reviews: raw.review_count.toLocaleString('en-US'),
+      checkIn: raw.policies.check_in_time, checkOut: raw.policies.check_out_time, cancellation: raw.policies.cancellation,
+      phone: raw.contact.phone, email: raw.contact.email, amenities: raw.amenities.map(titleCase)
+    };
+    var ci = st.checkIn, co = st.checkOut;
+    var ready = !!(ci && co), invalid = ready && co <= ci;
+    var nights = ready && !invalid ? nightsBetween(ci, co) : [];
+    var open = [], closed = [];
+    if (nights.length) raw.rooms.forEach(function(r){
+      var ok = nights.every(function(n){ return r.available_dates.indexOf(n) >= 0; });
+      if (ok) open.push({
+        type: r.type, price: r.price_per_night.toFixed(0), total: (r.price_per_night * nights.length).toFixed(0),
+        specs: plural(r.bed_count, r.bed_type + ' bed', r.bed_type + ' beds') + ' · Sleeps ' + r.max_occupancy + ' · ' + r.square_footage + ' sq ft',
+        amen: r.room_amenities.map(titleCase).join(', ')
+      }); else closed.push(r.type);
+    });
+    var viewMonth = st.month || monthOf(ci || TODAY);
+    var minByNight = {};
+    raw.rooms.forEach(function(r){ r.available_dates.forEach(function(d){ minByNight[d] = Math.min(minByNight[d] || Infinity, r.price_per_night); }); });
+    var first = new Date(viewMonth + '-01T00:00:00Z'), lead = first.getUTCDay();
+    var daysInMonth = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
+    var days = [];
+    for (var i = 0; i < lead; i++) days.push({ vis: 'hidden', num: '', sub: '', aria: '', pressed: false, past: false, pick: function(){}, cursor: 'default', bg: 'transparent', fg: '#1b1f23', border: '1px solid transparent', deco: 'none' });
+    for (var dnum = 1; dnum <= daysInMonth; dnum++) (function(){
+      var iso = viewMonth + '-' + String(dnum).padStart(2,'0');
+      var past = iso < TODAY, isToday = iso === TODAY;
+      var isIn = iso === ci, isOut = iso === co, between = ci && co && iso > ci && iso < co;
+      var price = minByNight[iso], openNight = !!price;
+      var pressed = isIn || isOut;
+      var bg = pressed ? '#1f5fbf' : between ? '#e8f0fb' : 'transparent';
+      var fg = pressed ? '#ffffff' : past ? '#8a9199' : '#1b1f23';
+      var border = isToday && !pressed ? '2px solid #1b1f23' : pressed ? '2px solid #1f5fbf' : '1px solid transparent';
+      var sub = past ? '' : openNight ? '$' + price.toFixed(0) : '';
+      var aria = fmt(iso) + ', ' + iso.slice(0,4) + (past ? ', unavailable' : openNight ? ', from $' + price.toFixed(0) : ', no rooms') + (isIn ? ', selected check-in' : isOut ? ', selected check-out' : '');
+      days.push({ vis: 'visible', num: String(dnum), sub: sub, aria: aria, pressed: pressed, past: past,
+        cursor: past ? 'not-allowed' : 'pointer', bg: bg, fg: fg, border: border, deco: past ? 'line-through' : 'none',
+        pick: function(){
+          if (past) return;
+          if (st.picker === 'out' && ci && iso > ci) { self.setState({ checkOut: iso, picker: '' }); return; }
+          if (st.picker === 'in' || !ci || iso <= ci) { self.setState({ checkIn: iso, checkOut: st.checkOut && st.checkOut <= iso ? '' : st.checkOut, picker: 'out' }); return; }
+          self.setState({ checkOut: iso, picker: '' });
+        } });
+    })();
+    var hasResults = nights.length > 0;
+    return Object.assign(base, {
+      h: h, roomCount: plural(raw.rooms.length, 'room type', 'room types'),
+      inText: toText(ci), outText: toText(co),
+      inBorder: st.picker === 'in' ? '2px solid #1f5fbf' : '1px solid #8a9199', outBorder: st.picker === 'out' ? '2px solid #1f5fbf' : '1px solid #8a9199',
+      pickIn: st.picker === 'in', pickOut: st.picker === 'out',
+      pickerOpen: !!st.picker, pickerTitle: 'Choose ' + (st.picker === 'out' ? 'check-out' : 'check-in') + ' date',
+      pickerPrompt: st.picker === 'out' ? 'Select your check-out date' : 'Select your check-in date',
+      monthLabel: MONTHS[+viewMonth.slice(5,7) - 1] + ' ' + viewMonth.slice(0,4),
+      dow: ['Su','Mo','Tu','We','Th','Fr','Sa'], days: days,
+      prevMonth: function(){ self.setState({ month: shiftMonth(viewMonth, -1) }); },
+      nextMonth: function(){ self.setState({ month: shiftMonth(viewMonth, 1) }); },
+      goToday: function(){ self.setState({ month: monthOf(TODAY) }); },
+      clearDates: function(){ self.setState({ checkIn: '', checkOut: '', picker: 'in', month: monthOf(TODAY) }); },
+      closePicker: function(){ self.setState({ picker: '' }); },
+      openIn: function(){ self.setState({ picker: 'in', month: ci ? monthOf(ci) : monthOf(TODAY) }); },
+      openOut: function(){ self.setState({ picker: 'out', month: co ? monthOf(co) : (ci ? monthOf(ci) : monthOf(TODAY)) }); },
+      onInType: function(e){ var v = parseText(e.target.value); if (v && v >= TODAY) self.setState({ checkIn: v, checkOut: st.checkOut && st.checkOut <= v ? '' : st.checkOut, month: monthOf(v) }); },
+      onOutType: function(e){ var v = parseText(e.target.value); if (v && v > TODAY) self.setState({ checkOut: v, month: monthOf(v) }); },
+      windowHint: allOpen.length ? 'Open nights at this hotel: ' + spans(allOpen) + ', 2026' : 'This hotel has no open nights right now.',
+      vIdle: !ready, vInvalid: invalid, vResults: hasResults && open.length > 0, vEmpty: hasResults && open.length === 0,
+      open: open, openCount: plural(open.length, 'room type open', 'room types open'),
+      nightsLabel: plural(nights.length, 'night', 'nights'), rangeLabel: ready && !invalid ? fmt(ci) + ' to ' + fmt(co) : '',
+      emptyHint: allOpen.length ? 'Try ' + spans(allOpen) + '.' : 'This hotel has no open dates. Try another hotel.',
+      hasClosed: hasResults && closed.length > 0 && open.length > 0, closedList: closed.join(', '),
+    });
+  }
+}
+</script>
+</body>
+</html>
