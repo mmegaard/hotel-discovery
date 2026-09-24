@@ -67,11 +67,28 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   capitalizing the first letter; brand casing like "free Wi-Fi" survives. A lookup table would be more polished
   and is not worth its maintenance for 40 hotels.
 
+## Search list
+
+- **Loading is derived, not stored.** `useHotels` keeps the last result with the filter key it answered; "loading"
+  means the current key differs. No `setState` inside the effect, and a stale response is dropped by the cleanup
+  flag. The mock answers on the next tick, so the loading line is barely visible; it exists so a real API slots in.
+- **Search results are time-agnostic.** DESIGN.md puts a "No open dates" tag on cards for hotels with empty
+  `available_dates`. Matt's call: the list is about place, stars and price; dates belong to the detail page. The
+  tag is dropped here and "This hotel has no open dates" will appear only in the availability panel.
+- **Cards advertise the lowest in-range price.** `HotelList` computes it with `lowestPriceInRange` and passes a
+  number to `HotelCard`, so the card stays a dumb renderer. With no price filter that is simply the cheapest room.
+- **"N of 40 hotels" hard-codes the total.** The dataset is fixed and the copy is from the design; deriving it
+  would mean a second query.
+- **Amenities show three plus "+N more".** Per the design; the full list is on the detail page.
+- **Placeholder image is a crossed box.** The data has no images; a box keeps the card's shape honest.
+
 ## UI states
 
 Documented here as they are built.
 
 - **404** (`/anything`): mono "404", "Page not found", one-line explanation, "Search hotels" button link.
+
+- **Loading** (search page): one line, "Loading hotels…", in the `aria-live` count region.
 
 Still to build: no hotels match; availability idle; invalid date range; no rooms
 available; hotel has no open dates; hotel not found; 404; one-line loading.
