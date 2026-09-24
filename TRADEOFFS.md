@@ -5,7 +5,7 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 
 ## Bootstrap
 
-- **Stack: React 19 + TypeScript + Vite, Tailwind v4, React Router v7, react-day-picker, Vitest + Testing Library.**
+- **Stack: React 19 + TypeScript + Vite, Tailwind v4, React Router v8, react-day-picker v10, Vitest + Testing Library.**
   Small, current, and boring on purpose. No state or data-fetching library: the URL owns page identity and filters,
   and a 40-hotel in-memory dataset does not justify a cache layer.
 - **oxlint instead of ESLint.** Vite's current React template ships oxlint. It runs the rules-of-hooks check we
@@ -24,11 +24,12 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Currency is USD everywhere.** The data has no currency field. Hotels span six countries (USA, UK, France,
   Japan, Australia, Italy) but every price is shown as USD; no conversion or locale-specific formatting.
 - **Desktop-only layout (1280px).** The design handoff covers desktop only; a mobile layout is out of scope for the
-  3-hour framing and is the first thing to add afterwards.
+  3-hour framing and is the first thing to add afterwards. The one responsive rule is the detail grid collapsing
+  below 1024px (see "Hotel detail").
 
 ## Routing and URL design
 
-- **React Router v7 (`react-router` package) in data-router mode, no loaders.** `createBrowserRouter` over a plain
+- **React Router v8 (`react-router` package) in data-router mode, no loaders.** `createBrowserRouter` over a plain
   route table exported from `src/routes.tsx`; tests bind the same table to `createMemoryRouter`, so route
   behaviour is tested without touching `window.location`. Loaders are skipped because data comes from a
   synchronous in-memory seed; page-level hooks keep the layering simpler to read.
@@ -58,14 +59,14 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   from a value, not from a catch block.
 - **Filter semantics:** city is an exact, case-insensitive match; stars match any selected rating and an empty
   selection means all; price matches a hotel when ANY room is inside `[minPrice, maxPrice]` and an unset bound is
-  open. Cards will show the lowest in-range price. Star toggles are priced against the current city and price
+  open. Cards show the lowest in-range price. Star toggles are priced against the current city and price
   filters with the star selection ignored, so every toggle stays informative.
 - **Night semantics:** a stay covers `[checkIn, checkOut)`; the guest leaves on check-out morning, so the check-out
   date never needs to be available. A room is open only when every night is in `available_dates`. Check-out on
   or before check-in is invalid and opens nothing.
 - **Dates are ISO strings, not Date objects.** Arithmetic goes through `Date.UTC` so time zones never shift a day.
   No date library: the maths is a few lines and `Intl.DateTimeFormat` does the formatting. The design suggested
-  date-fns; react-day-picker will pull it in transitively later, but the app's own code stays independent of it.
+  date-fns; react-day-picker pulls it in transitively, but the app's own code stays independent of it.
 - **Fake "today" is 2026-07-09,** the day before the seed's only open dates, so the demo can book. `lib/dates.ts#today()`
   is the single switch: `VITE_TODAY=now` uses the wall clock, `VITE_TODAY=YYYY-MM-DD` pins another day.
 - **Amenity labels are humanized, not mapped.** `fitness_center` → "Fitness center" by replacing underscores and
@@ -74,9 +75,9 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 
 ## Search list
 
-- **Loading is derived, not stored.** `useHotels` keeps the last result with the filter key it answered; "loading"
-  means the current key differs. No `setState` inside the effect, and a stale response is dropped by the cleanup
-  flag.
+- **Loading is derived, not stored.** `useQuery` keeps the last result with the key it answered; "loading" means
+  there is no result yet and "refreshing" means the key has moved on. No `setState` inside the effect, and a
+  stale response is dropped by the cleanup flag.
 - **Skeleton cards while loading.** Every card is the same box, so `HotelList` renders six `HotelCardSkeleton`s
   (aria-hidden, `aria-busy` on the region) and swaps them for real cards without the page jumping. Six fills a
   1280×900 viewport. The count line reads "Loading hotels…" for screen readers.
@@ -84,7 +85,7 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   the delay is the one place the mock is deliberately unlike an in-memory lookup.
 - **Search results are time-agnostic.** DESIGN.md puts a "No open dates" tag on cards for hotels with empty
   `available_dates`. Matt's call: the list is about place, stars and price; dates belong to the detail page. The
-  tag is dropped here and "This hotel has no open dates" will appear only in the availability panel.
+  tag is dropped here and "This hotel has no open dates" appears only in the availability panel.
 - **Cards advertise the lowest in-range price.** `HotelList` computes it with `lowestPriceInRange` and passes a
   number to `HotelCard`, so the card stays a dumb renderer. With no price filter that is simply the cheapest room.
 - **"N of 40 hotels" reads both numbers from the API.** N is `total` on the search response (matches across all
@@ -127,7 +128,7 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   ("1" on the way to "100", or "9999") stay in the box while typing and are discarded on blur or Enter, so the
   box falls back to its last applied value. Nothing is ever clamped; an invalid entry is simply not taken.
 - **Debounce in the hook, not the inputs.** Every applied value still writes the URL and moves the slider at
-  once, so the UI feels direct, but `useHotels` waits 250ms of quiet before querying (0ms under test). The list
+  once, so the UI feels direct, but `useQuery` waits 250ms of quiet before querying (0ms under test). The list
   reads as refreshing from the first change. A slider drag therefore costs one request, not dozens.
 - **Superseded queries are aborted.** `searchHotels` takes an `AbortSignal` like `fetch()`; the hook aborts the
   previous controller on every change and drops any answer that still arrives. The mock honours the signal, so
@@ -140,10 +141,9 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   parsing in the component, a numeric keyboard on touch, and the slider for coarse changes cover the need.
 - **Values at the bounds are written as `undefined`,** so an untouched slider leaves the URL clean and does not
   trigger a refetch with a different key.
-- **Stale results stay visible while a filter change is answered.** `useHotels` now distinguishes `loading`
+- **Stale results stay visible while a filter change is answered.** `useQuery` distinguishes `loading`
   (nothing yet, skeletons) from `refreshing` (previous list dimmed with `aria-busy`), so dragging the slider
-  never collapses the page into skeletons. Every step still hits the mock; no debounce, because a 40-hotel
-  in-memory query is cheaper than the added latency and code.
+  never collapses the page into skeletons.
 
 ## Star rating
 
@@ -151,7 +151,7 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   selection means all ratings. Selected ratings serialize as `stars=5,4`.
 - **Each toggle shows "from $X" under the current city and price filters** with the star selection itself ignored,
   so a pressed toggle never hides the price that would justify pressing another. Computed by `starOptions` in
-  the pure logic layer over the unfiltered catalogue.
+  the pure logic layer, behind the facets endpoint.
 - **Nothing is disabled.** A rating with no matches (there are no 1-star hotels) reads "no matches" and stays
   clickable; pressing it alone yields the empty state with its Reset button. Disabled controls are easy to miss
   and read as broken to screen readers; a clear "no matches" plus an honest empty state is friendlier.
@@ -175,7 +175,7 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 - **Address is one line** ("street, city, state zip, country") via `formatAddress`; the data has no locale
   hints and every address is fine in that order.
 - **Skeleton mirrors the header and amenity boxes** so the page does not jump when the hotel arrives. The right
-  column is reserved at 440px for the availability panel (PR 8) so the two-column layout is final now.
+  column was reserved at 440px before the availability panel existed, so the layout never changed when it landed.
 - **The detail grid collapses to one column below 1024px,** with availability dropping under the amenities.
   Desktop stays the designed layout; this is the one responsive rule in the app, so a narrower window still reads
   in order. A full mobile pass (filter bar, cards, touch targets at 375px) remains out of scope.
@@ -228,7 +228,6 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
 Documented here as they are built.
 
 - **404** (`/anything`): mono "404", "Page not found", one-line explanation, "Search hotels" button link.
-
 - **Loading** (search page): "Loading hotels…" in the `aria-live` count region plus six skeleton cards.
 - **Refreshing** (search page): previous cards stay, dimmed to 60%, `aria-busy` on the results region.
 - **No hotels match** (search page, `role="status"`): dashed panel, "No hotels match these filters", hint, primary
@@ -249,6 +248,7 @@ All designed states are built.
 
 ## Out of scope
 
-Per-night prices in the calendar, mobile layout, dates in the URL, real backend or fetch, error boundaries,
-form/state libraries, sorting, free-text name search, amenity filters, pagination, real images or maps, booking flow,
-guest count, currency conversion, dark mode, Storybook, E2E tests, CI, deployment.
+Per-night prices in the calendar, a full mobile layout, dates in the URL, real backend or fetch, error
+boundaries, form/state libraries, sorting, free-text name search, amenity filters, a paging UI (the contract is
+paged; the seed fits on one page), real images or maps, booking flow, guest count, currency conversion, dark mode,
+Storybook, E2E tests, CI, deployment.

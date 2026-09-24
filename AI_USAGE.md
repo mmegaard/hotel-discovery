@@ -3,6 +3,15 @@
 How AI (Claude Code) was used on this project, one entry per PR. Each entry records what the AI produced,
 what I decided, and what I changed by hand, so the line between assistance and authorship is visible.
 
+**How the collaboration ran.** I wrote the requirements and the design handoff, approved a plan and a
+conventions file (`.claude/skills/hotel-discovery/SKILL.md`), then took the work one PR at a time: the AI
+proposed the files it would touch, I said go, it built and tested, opened the PR, and stopped. I reviewed
+each PR in GitHub and in the running app before merging. Corrections I made mid-stream are recorded in the
+"I decided" lines below; the biggest were dropping availability from search results, making typed prices apply
+live with Expedia-style fallback, removing the number spinner, and requiring the data layer to hold at
+production volumes (facets endpoint, paged contract, debounce and abort). Time: _[fill in]_ against the assignment's 3-hour framing; the extra went into the design's combobox, dual
+slider, star prices and calendar, which TRADEOFFS.md marks as the first things to cut.
+
 ## PR 0 — bootstrap
 
 - **AI produced:** the implementation plan (stack, architecture, PR sequence, conventions), the project skill file
@@ -90,4 +99,12 @@ what I decided, and what I changed by hand, so the line between assistance and a
   TRADEOFFS.md.
 - **I decided:** library for the grid, our own selection rule; inline placement per the wireframe; drop per-night
   prices in the calendar.
+- **I changed:** reviewed the PR before merge.
+
+## PR 10 — README and final docs pass
+
+- **AI produced:** this README, the consistency pass over TRADEOFFS.md (tenses, hook names after the `useQuery`
+  refactor, React Router version, out-of-scope list), and the collaboration summary above.
+- **I decided:** README structure (run, try it, how it is built, state, contract, component map, tests); flip
+  the repository public before the interview.
 - **I changed:** reviewed the PR before merge.
