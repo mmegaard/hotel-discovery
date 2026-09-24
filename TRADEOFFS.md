@@ -122,7 +122,9 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   typed until blur even if the applied value was clamped against the other handle, so the cursor is never fought.
 - **No debounce.** Each applied value is one `replace` navigation and one in-memory query; the refreshing state
   keeps the list stable. With a real API the fetch inside `useHotels` would be debounced, not the URL update.
-- **Handles cannot cross:** the slider keeps min ≤ max − $5; the inputs clamp min up to max and max down to min.
+- **Handles cannot cross.** The slider keeps min ≤ max − $5. A typed min above the max (or max below the min) is
+  not applied at all: the box shows what was typed until blur, then falls back to its last applied value, the way
+  Expedia does. Clamping it to the other handle instead would silently collapse the range to a single price.
 - **Values at the bounds are written as `undefined`,** so an untouched slider leaves the URL clean and does not
   trigger a refetch with a different key.
 - **Stale results stay visible while a filter change is answered.** `useHotels` now distinguishes `loading`
