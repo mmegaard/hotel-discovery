@@ -160,6 +160,9 @@ what was chosen, and why, so a reviewer can disagree with the reasoning rather t
   hotels to derive these would not survive real data volumes. `useFilterOptions` keys on city and price only, so
   toggling stars never refetches.
 - **Fixed-size toggles with a 2px border in both states,** so pressing one never shifts its neighbours.
+- **Five toggle-sized placeholders until the facets answer.** The row used to render nothing and then grow;
+  now `useFilterOptions` returns undefined until the first answer and `FilterBar` fills the row with
+  placeholders of the toggles' exact box, so the filter panel's height is final from the first paint.
 
 ## Hotel detail
 
@@ -246,6 +249,11 @@ A final pass against "lightweight, production-ready", after all features landed.
   "Page not found", each suffixed with the app name (`useDocumentTitle`).
 - **The back link no longer reads React Router's private history index.** `HotelCard` links carry
   `state: { fromSearch: true }`; `BackLink` reads `useLocation().state`. Same behaviour, public API only.
+- **The calendar is code-split.** `DatePicker` (react-day-picker + date-fns, ~21 KB gzipped) loads on first focus
+  of a date input via `React.lazy`; a fallback box of the calendar's height keeps the panel from jumping. The
+  main bundle drops from 136 KB to 116 KB gzipped, and the search page never pays for the calendar.
+- **The empty state stays up while a change to an empty result is answered,** instead of the results slot going
+  blank for the duration of the refresh.
 
 ## UI states
 
