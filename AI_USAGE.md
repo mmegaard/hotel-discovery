@@ -9,8 +9,7 @@ proposed the files it would touch, I said go, it built and tested, opened the PR
 each PR in GitHub and in the running app before merging. Corrections I made mid-stream are recorded in the
 "I decided" lines below; the biggest were dropping availability from search results, making typed prices apply
 live with Expedia-style fallback, removing the number spinner, and requiring the data layer to hold at
-production volumes (facets endpoint, paged contract, debounce and abort). Time: _[fill in]_ against the assignment's 3-hour framing; the extra went into the design's combobox, dual
-slider, star prices and calendar, which TRADEOFFS.md marks as the first things to cut.
+production volumes (facets endpoint, paged contract, debounce and abort). Time: about 3 hours of paired build time in Claude Code for the ten feature PRs and the hardening pass, plus roughly 2 hours earlier the same day on planning and the design handoff. Against the assignment's 3-hour framing, the extra went into the design's combobox, dual slider, star prices and calendar, which TRADEOFFS.md marks as the first things to cut.
 
 ## PR 0 — bootstrap
 
