@@ -49,8 +49,9 @@ The switch is `today()` in `src/lib/dates.ts`; nothing else knows the date is fa
 3. Press **5 stars**: one hotel. Press **1 star** alone: no 1-star hotels exist, so the empty state appears with
    a Reset button.
 4. Reload any filtered URL: the filters come back from the query string.
-5. Open **The Grand Luminary**. Focus **Check-in** to get the calendar; click July 10 then July 12. Two room types,
-   with nightly price and stay total. Try July 10 → 13: one room open, the other named as not open.
+5. Open **The Grand Luminary**. Availability is prefilled to tonight (July 9 → 10): no rooms, with the hint
+   "Try Jul 10–12". Focus **Check-in** to get the calendar; click July 10 then July 12. Two room types, with
+   nightly price and stay total. Try July 10 → 13: one room open, the other named as not open.
 6. Type `07/12/2026` as check-out with check-in `07/12/2026`: the validation alert. Open hotel-04: "This hotel
    has no open dates."
 7. `/hotels/hotel-99` shows "Hotel not found"; `/anything` shows the 404.
@@ -145,7 +146,7 @@ These live in `.claude/skills/hotel-discovery/SKILL.md`, the conventions file th
 
 ## Tests
 
-71 tests in ~2 seconds, colocated with the code they cover.
+72 tests in ~2 seconds, colocated with the code they cover.
 
 - **Pure logic**: one test per rule in TRADEOFFS.md (city match, any-room price rule, multi-star, night
   semantics, date parsing edge cases, URL round-trips).
@@ -161,6 +162,7 @@ rather than reading the wall clock.
 
 ## Repository
 
-Ten PRs, one per feature, merged with merge commits so the history reads as the roadmap:
+Fifteen PRs, one topic each, merged with merge commits so the history reads as the roadmap:
 bootstrap → app shell → api layer → search list → city filter → price filter → star filter → hotel detail →
-room availability → date picker → this README.
+room availability → date picker → README → then five production-hardening PRs: query errors and debounce,
+small fixes, no layout jumps, CI, prefilled dates.

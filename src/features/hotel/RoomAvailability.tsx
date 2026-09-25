@@ -21,8 +21,10 @@ export interface RoomAvailabilityProps {
 /** Check-in / check-out inputs and the rooms open for every night between
  *  them. Dates are local state: they belong to this panel, not the URL. */
 export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
-  const [checkIn, setCheckIn] = useState<IsoDate>()
-  const [checkOut, setCheckOut] = useState<IsoDate>()
+  // Prefilled to a one-night stay from today, so the panel answers at once;
+  // the user changes either end from there.
+  const [checkIn, setCheckIn] = useState<IsoDate | undefined>(() => today())
+  const [checkOut, setCheckOut] = useState<IsoDate | undefined>(() => addDays(today(), 1))
   // Which input the calendar is attached to; null when closed.
   const [picker, setPicker] = useState<'from' | 'to' | null>(null)
   const datesRef = useRef<HTMLDivElement>(null)
