@@ -21,7 +21,9 @@ npm run dev        # http://localhost:5173
 ```bash
 npm test           # Vitest + Testing Library
 ```
+### Date 
 
+For demo purposes to fit the data we are simulating "today" to be July 9th 2026 for the mock data. Set VITE_TODAY=now to default to actual date today.
 ## State management
 
 - The URL owns which page, which hotel, and the search filters, so a reload or shared link restores the same view.
