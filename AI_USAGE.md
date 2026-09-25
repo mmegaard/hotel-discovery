@@ -1,15 +1,6 @@
 # AI usage
 
-How AI (Claude Code) was used on this project, one entry per PR. Each entry records what the AI produced,
-what I decided, and what I changed by hand, so the line between assistance and authorship is visible.
-
-**How the collaboration ran.** I wrote the requirements and the design handoff, approved a plan and a
-conventions file (`.claude/skills/hotel-discovery/SKILL.md`), then took the work one PR at a time: the AI
-proposed the files it would touch, I said go, it built and tested, opened the PR, and stopped. I reviewed
-each PR in GitHub and in the running app before merging. Corrections I made mid-stream are recorded in the
-"I decided" lines below; the biggest were dropping availability from search results, making typed prices apply
-live with Expedia-style fallback, removing the number spinner, and requiring the data layer to hold at
-production volumes (facets endpoint, paged contract, debounce and abort). Time: about 3 hours of paired build time in Claude Code for the ten feature PRs and the hardening pass, plus roughly 30 minutes earlier the same day on planning and the design handoff. Against the assignment's 3-hour framing, the extra went into the design's combobox, dual slider, star prices and calendar, which TRADEOFFS.md marks as the first things to cut.
+I used Claude Code and Claude Design as a pair programmer. I started by iterating on a component map with Claude Code, then designed the UI with Claude Design, walking back decisions it made that didn’t match what I wanted while letting it own choices that didn’t affect UX or accessibility. From the component map and design, Claude Code built a plan, and each feature followed the same loop: it restated the feature in a few bullets, I signed off or steered, it built and opened a PR scoped to that feature, and I reviewed and adjusted. A skills file captured my preferences and intent so I didn’t have to restate them every session. I didn’t read every line of generated code; I focused my review on the high-level decisions, structure, and anything touching UX or accessibility, verified by tests and by keeping each PR small enough to review meaningfully. Below is what I asked claude to track that we did for AI usage. This paragraph was my take on it.
 
 ## PR 0 — bootstrap
 
