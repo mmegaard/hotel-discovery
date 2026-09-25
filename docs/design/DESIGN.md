@@ -1,10 +1,6 @@
 # Hotel Discovery: design handoff
 
-Status: design only. Nothing has been built. Do not start implementing until asked.
-
-Source of truth for the visual design is the wireframe canvas at
-https://claude.ai/artifact/Nz7V6FmvTr6dS68jjBvy7a (three artboards: SearchPage,
-HotelDetailPage, NotFoundPage). The `wireframes/` folder holds the artboard
+The artifacts folder holds the artboard
 sources for reference; they are readable markup with the filter and availability
 logic in plain JavaScript at the bottom of each file. They are not React and are
 not meant to be ported line by line.

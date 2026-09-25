@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
@@ -33,7 +33,7 @@ describe('HotelDetailPage', () => {
       'href',
       '/hotels?city=Chicago',
     )
-    expect(document.title).toBe('The Grand Luminary · StayFinder')
+    await waitFor(() => expect(document.title).toBe('The Grand Luminary · StayFinder'))
   })
 
   it('goes back through history when the user came from the search page', async () => {
@@ -58,6 +58,6 @@ describe('HotelDetailPage', () => {
       '/hotels',
     )
     expect(screen.getByRole('link', { name: 'Back to results' })).toHaveAttribute('href', '/hotels')
-    expect(document.title).toBe('Hotel not found · StayFinder')
+    await waitFor(() => expect(document.title).toBe('Hotel not found · StayFinder'))
   })
 })
