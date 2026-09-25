@@ -137,6 +137,12 @@ export function RoomAvailability({ hotel }: RoomAvailabilityProps) {
           </p>
         )}
 
+        {ready && !invalid && status === 'error' && (
+          <p role="status" className="text-sm text-muted">
+            Couldn’t check availability. Check your connection and try again.
+          </p>
+        )}
+
         {ready && !invalid && status === 'loading' && (
           <>
             <p className="text-sm text-ink-secondary">Checking availability…</p>

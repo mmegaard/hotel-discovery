@@ -67,11 +67,13 @@ URL  →  page  →  hook  →  api  →  pure logic
 
 - **Pages** (`src/features/*/…Page.tsx`) are the only components that read the URL and call data hooks.
 - **Hooks** (`src/hooks/`) call `api/hotelApi.ts` and expose `{ data, status }`. `useQuery` is the one
-  `useEffect` that talks to the API: it debounces (250ms), aborts superseded requests, and derives a
-  `loading | refreshing | success | idle` status from whether the last answer matches the current key.
+  `useEffect` that talks to the API: it aborts superseded requests, turns a failure into `status: 'error'`,
+  and derives `idle | loading | refreshing | success | error` from whether the last answer matches the current
+  key. Only price changes are debounced (`useFilterDebounce`); clicks query at once.
 - **API** (`src/api/hotelApi.ts`) speaks the UI's vocabulary and maps onto the backend contract.
-  `mockHotelApi.ts` is an in-memory server behind the same contract, with 400ms of simulated latency in the
-  browser and an `AbortSignal` like `fetch()`. Replacing it with a real client touches these two files only.
+  `mockHotelApi.ts` is an in-memory server behind the same contract, with simulated latency
+  (`VITE_MOCK_LATENCY_MS`, default 400ms, 0 under test) and an `AbortSignal` like `fetch()`. Replacing it with
+  a real client touches these two files only.
 - **Pure logic** (`src/api/logic/`, `src/lib/`) holds every rule: filtering, availability, date maths,
   URL parsing, formatting. All unit-tested with no React.
 - **`components/ui/`** are props-only and know nothing about hotels or the router. **`features/`** components
@@ -141,12 +143,12 @@ These live in `.claude/skills/hotel-discovery/SKILL.md`, the conventions file th
 
 ## Tests
 
-67 tests in ~2 seconds, colocated with the code they cover.
+69 tests in ~2 seconds, colocated with the code they cover.
 
 - **Pure logic**: one test per rule in TRADEOFFS.md (city match, any-room price rule, multi-star, night
   semantics, date parsing edge cases, URL round-trips).
-- **Hooks**: `useQuery` for loading → refreshing → success, debounce timing with fake timers, abort of
-  superseded requests, idle while disabled.
+- **Hooks**: `useQuery` for loading → refreshing → success, error status, debounce timing with fake timers,
+  abort of superseded requests, idle while disabled; `useFilterDebounce` for price-only changes.
 - **UI leaves with logic**: Combobox keyboard and matching, NumberInput live apply and fallback, DateInput,
   DatePicker selection rule and disabled days.
 - **Pages**: rendered inside a memory router against the real mock: filters write the URL and narrow the

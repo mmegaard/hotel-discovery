@@ -39,6 +39,8 @@ export function SearchPage() {
       <p aria-live="polite" className="text-[15px]">
         {status === 'loading' ? (
           'Loading hotels…'
+        ) : status === 'error' ? (
+          'Couldn’t load hotels. Check your connection and try again.'
         ) : (
           <>
             <strong>{total}</strong> of {options.totalHotels} hotels
@@ -46,7 +48,7 @@ export function SearchPage() {
         )}
       </p>
 
-      {empty ? (
+      {status === 'error' ? null : empty ? (
         <EmptyState
           title="No hotels match these filters"
           description="Try a wider price range or fewer star ratings."

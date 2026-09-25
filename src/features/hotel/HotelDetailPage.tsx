@@ -17,7 +17,11 @@ export function HotelDetailPage() {
         fallbackTo={hotel ? `/hotels?city=${encodeURIComponent(hotel.address.city)}` : '/hotels'}
       />
 
-      {status === 'not-found' ? (
+      {status === 'error' ? (
+        <p role="status" className="text-[15px] text-muted">
+          Couldn’t load this hotel. Check your connection and try again.
+        </p>
+      ) : status === 'not-found' ? (
         <div className="mt-10">
           <EmptyState
             title="Hotel not found"
