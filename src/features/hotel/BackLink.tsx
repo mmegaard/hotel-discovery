@@ -1,17 +1,18 @@
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 
 export interface BackLinkProps {
   /** Where to go when there is no history to step back into. */
   fallbackTo: string
 }
 
-/** "Back to results": history back when the user came from within the app
- *  (React Router stores an index in history.state), otherwise the fallback
- *  URL. Rendered as a real link so the fallback works without JavaScript
- *  and shows in the status bar. */
+/** "Back to results": history back when the user arrived from the search page
+ *  (HotelCard links carry `state.fromSearch`), otherwise the fallback URL.
+ *  Rendered as a real link so the fallback works without JavaScript and
+ *  shows in the status bar. */
 export function BackLink({ fallbackTo }: BackLinkProps) {
   const navigate = useNavigate()
-  const hasHistory = typeof window !== 'undefined' && (window.history.state?.idx ?? 0) > 0
+  const { state } = useLocation()
+  const hasHistory = Boolean(state?.fromSearch)
 
   return (
     <Link

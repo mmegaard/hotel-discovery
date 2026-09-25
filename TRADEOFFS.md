@@ -241,6 +241,11 @@ A final pass against "lightweight, production-ready", after all features landed.
 - **The fake "today" is deliberately not gated on production builds.** A demo deploy is a production build; if
   it flipped to the real date the seed's July nights would be past and nothing could be booked. `VITE_TODAY=now`
   is the one switch, set at build time when a real API arrives.
+- **A hotel with no rooms shows "No rooms listed"** instead of a price. The seed has none, real catalogues do.
+- **Page titles change per route:** "Find a hotel", "Hotels in Seattle", the hotel's name, "Hotel not found",
+  "Page not found", each suffixed with the app name (`useDocumentTitle`).
+- **The back link no longer reads React Router's private history index.** `HotelCard` links carry
+  `state: { fromSearch: true }`; `BackLink` reads `useLocation().state`. Same behaviour, public API only.
 
 ## UI states
 
@@ -265,6 +270,7 @@ Documented here as they are built.
 - **Request failed** (search count line, detail page, availability panel; `role="status"`): one line,
   "Couldn't load hotels / this hotel / check availability. Check your connection and try again." The mock never
   fails; the state exists for a real API.
+- **No rooms listed** (hotel card): replaces the price block for a hotel with an empty `rooms` array.
 
 All designed states are built.
 

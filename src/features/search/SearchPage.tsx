@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useFilterOptions } from '../../hooks/useFilterOptions'
 import { useHotelFilters } from '../../hooks/useHotelFilters'
 import { useHotels } from '../../hooks/useHotels'
@@ -19,6 +20,8 @@ export function SearchPage() {
     setCityDraft('')
     resetFilters()
   }
+
+  useDocumentTitle(filters.city ? `Hotels in ${filters.city}` : 'Find a hotel')
 
   const empty = status === 'success' && hotels.length === 0
 

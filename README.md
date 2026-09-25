@@ -118,7 +118,7 @@ AppLayout                        header + <Outlet />
 │   ├── HotelList → HotelCard    or HotelCardSkeleton ×6 while loading
 │   └── ui/EmptyState            "No hotels match these filters" + Reset
 ├── /hotels/:id  HotelDetailPage useHotel
-│   ├── BackLink                 history back, else /hotels?city=<city>
+│   ├── BackLink                 history back if arrived from search, else /hotels?city=<city>
 │   ├── HotelHeader              image, name, stars, address, rating, policies, contact
 │   ├── AmenityList
 │   ├── RoomAvailability         useRoomAvailability; dates as local state
@@ -143,7 +143,7 @@ These live in `.claude/skills/hotel-discovery/SKILL.md`, the conventions file th
 
 ## Tests
 
-69 tests in ~2 seconds, colocated with the code they cover.
+71 tests in ~2 seconds, colocated with the code they cover.
 
 - **Pure logic**: one test per rule in TRADEOFFS.md (city match, any-room price rule, multi-star, night
   semantics, date parsing edge cases, URL round-trips).
